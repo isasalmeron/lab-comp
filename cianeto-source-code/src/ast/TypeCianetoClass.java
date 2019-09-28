@@ -1,3 +1,8 @@
+/*
+ *	Isabela Salmeron Boschi	- 552593
+ *	Luciane da Silva Lopes	- 552348
+ */
+
 package ast;
 /*
  * Krakatoa Class
@@ -17,6 +22,6 @@ public class TypeCianetoClass extends Type {
    private TypeCianetoClass superclass;
    // private FieldList fieldList;
    // private MethodList publicMethodList, privateMethodList;
-   // métodos públicos get e set para obter e iniciar as variáveis acima,
-   // entre outros métodos
+   // mï¿½todos pï¿½blicos get e set para obter e iniciar as variï¿½veis acima,
+   // entre outros mï¿½todos
 }

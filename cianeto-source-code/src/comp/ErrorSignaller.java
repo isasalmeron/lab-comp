@@ -1,3 +1,8 @@
+/*
+ *	Isabela Salmeron Boschi	- 552593
+ *	Luciane da Silva Lopes	- 552348
+ */
+
 package comp;
 import java.io.PrintWriter;
 import java.util.ArrayList;
