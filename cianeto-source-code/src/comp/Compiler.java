@@ -198,7 +198,6 @@ public class Compiler {
 		this.signalError.showError(msg);
 	}
 
-
 	private void next() {
 		lexer.nextToken();
 	}
@@ -360,9 +359,6 @@ public class Compiler {
 		}
 	}
 
-	/**
-
-	 */
 	private void writeStat() {
 		next();
 		check(Token.DOT, "a '.' was expected after 'Out'");
@@ -373,7 +369,11 @@ public class Compiler {
 	}
 
 	private void expr() {
-
+		simpleExpression();
+		if(lexer.token == Token.EQ || lexer.token == Token.LT || lexer.token == Token.GT || lexer.token == Token.LE || lexer.token == Token.GE || lexer.token == Token.NEQ){
+			next();
+			simpleExpression();
+		}
 	}
 
 	private void fieldDec() {
@@ -408,7 +408,6 @@ public class Compiler {
 		}
 
 	}
-
 
 	private void qualifier() {
 		if ( lexer.token == Token.PRIVATE ) {
@@ -461,9 +460,6 @@ public class Compiler {
 		return null;
 	}
 
-
-
-
 	private LiteralInt literalInt() {
 
 		LiteralInt e = null;
@@ -484,6 +480,59 @@ public class Compiler {
 				|| token == Token.LEFTPAR || token == Token.NIL
 				|| token == Token.ID || token == Token.LITERALSTRING;
 
+	}
+
+	private void assignExpr(){
+		expr();
+		if(lexer.token == Token.ASSIGN){
+			next();
+			expr();
+		}
+	}
+
+	private void basicValue(){
+		if(lexer.token == Token.LITERALINT || lexer.token == Token.TRUE || lexer.token == Token.FALSE || lexer.token == Token.LITERALSTRING){
+			next();
+		}
+		else{
+			error("A basic value was expected");
+		}
+	}
+
+	private void compStatement(){
+		check(Token.LEFTCURBRACKET, "'{' was expected");
+		next();
+
+		while(lexer.token != Token.RIGHTCURBRACKET && lexer.token != Token.END){
+			statement();
+		}
+		check(Token.RIGHTCURBRACKET, "'}' was expected");
+	}
+
+	private void exprList(){
+		expr();
+		while(lexer.token == Token.COMMA){
+			next();
+			expr();
+		}
+	}
+
+	private void factor(){
+	}
+
+	private void formalParamDec(){
+		paramDec();
+		while(lexer.token == Token.COMMA){
+			next();
+			paramDec();
+		}
+	}
+
+	private void highOperator(){
+		if(lexer.token == Token.MULT || lexer.token == Token.DIV || lexer.token == Token.AND){
+			next();
+		}
+		error("'*' or '/' or '&&' operator was expected");
 	}
 
 	private SymbolTable		symbolTable;
