@@ -266,6 +266,7 @@ public class Compiler {
 			break;
 		case SEMICOLON:
 			next();
+			checkSemiColon = false;
 			break;
 		case REPEAT:
 			repeatStat();
@@ -278,10 +279,10 @@ public class Compiler {
 			break;
 		default:
 			if ( lexer.token == Token.ID && lexer.getStringValue().equals("Out") ) {
-				writeStat();
+				printStat();
 			}
 			else {
-				expr();
+				assignExpr();
 			}
 
 		}
@@ -363,11 +364,12 @@ public class Compiler {
 	/**
 
 	 */
-	private void writeStat() {
+	private void printStat() {
 		next();
 		check(Token.DOT, "a '.' was expected after 'Out'");
 		next();
 		check(Token.IDCOLON, "'print:' or 'println:' was expected after 'Out.'");
+		next();
 		String printName = lexer.getStringValue();
 		expr();
 	}
@@ -532,9 +534,6 @@ public class Compiler {
 		}
 	}
 
-	private void factor() {
-	}
-
 	private void formalParamDec() {
 		paramDec();
 		
@@ -599,6 +598,110 @@ public class Compiler {
 		
 		factor();
 	}
+	
+	private void factor() {
+		if (lexer.token == Token.LITERALINT
+				|| lexer.token == Token.TRUE
+				|| lexer.token == Token.FALSE
+				||lexer.token == Token.LITERALSTRING) {
+			next();
+		} else if (lexer.token == Token.LEFTPAR) {
+			next();
+			expr();
+			
+			if (lexer.token == Token.RIGHTPAR) {
+				next();
+			} else {
+				error("'}' was expected");
+			}
+		} else if (lexer.token == Token.NOT) {
+			next();
+			factor();
+		} else if (lexer.token == Token.NIL) {
+			next();
+		} else if (lexer.token == Token.SUPER
+				|| lexer.token == Token.ID
+				|| lexer.token == Token.SELF
+				|| lexer.token == Token.IN) {
+			primaryExpr();
+			
+			if (lexer.token == Token.NEW) {
+				next();
+			}
+		}
+	}
+
+	private void primaryExpr() {
+		if (lexer.token == Token.SUPER) {
+			next();
+			
+			if (lexer.token == Token.DOT) {
+				next();
+				
+				if (lexer.token == Token.ID) {
+					next();
+				} else if (lexer.token == Token.IDCOLON) {
+					next();
+					exprList();
+				} else {
+					error("An identifier was expected");
+				}
+			} else {
+				error("'.' was expected");
+			}
+		}
+		
+		if (lexer.token == Token.ID) {
+			next();
+			
+			if (lexer.token == Token.DOT) {
+				next();
+				
+				if (lexer.token == Token.ID) {
+					next();
+				} else if (lexer.token == Token.IDCOLON) {
+					next();
+					exprList();
+				}
+			}
+		}
+		
+		if (lexer.token == Token.SELF) {
+			next();
+			
+			if (lexer.token == Token.DOT) {
+				next();
+				
+				if (lexer.token == Token.ID) {
+					next();
+					
+					if (lexer.token == Token.DOT) {
+						next();
+						
+						if (lexer.token == Token.ID) {
+							next();
+						} else if (lexer.token == Token.IDCOLON) {
+							next();
+							exprList();
+						} else {
+							error("An identifier was expected");
+						}
+					}
+				} else if (lexer.token == Token.IDCOLON) {
+					next();
+					exprList();
+				} else {
+					error("An identifier was expected");
+				}
+			}
+		}
+		
+		if (lexer.token == Token.IN) {
+			next();
+			readExpr();
+		}
+	}
+
 
 	private void signal() {
 		if (lexer.token == Token.PLUS || lexer.token == Token.MINUS) {
