@@ -387,8 +387,6 @@ public class Compiler {
 
 	}
 
-	
-
 	private void fieldDec() {
 		lexer.nextToken();
 		type();
@@ -620,19 +618,6 @@ public class Compiler {
 		}
 	}
 	
-	private void relation() {
-		if (lexer.token == Token.EQ
-				|| lexer.token == Token.LT
-				|| lexer.token == Token.GT
-				|| lexer.token == Token.LE
-				|| lexer.token == Token.GE
-				|| lexer.token == Token.NEQ) {
-			next();
-		} else {
-			error("'==' or '<' or '>' or '<=' or '>=' or '!=' was expected");
-		}
-	}
-	
 	private void readExpr() {
 		if (lexer.token == Token.IN) {
 			next();
@@ -650,16 +635,6 @@ public class Compiler {
 			next();
 		} else {
 			error("A 'readInt' or 'readString' method was expected");
-		}
-	}
-	
-	private void member() {
-		if (lexer.token == Token.VAR) {
-			fieldDec();
-		} else if (lexer.token == Token.FUNC) {
-			methodDec();
-		} else {
-			error("A field or method declaration was expected");
 		}
 	}
 	
@@ -681,22 +656,7 @@ public class Compiler {
 		} else {
 			error("'new' keyword was expected");
 		}
-	}
-	
-	private void intValue() {
-		if (lexer.token == Token.LITERALINT) {
-			next();
-			digit();
-		} else {
-			error("An integer was expected");
-		}
-	}
-	
-	private void digit() {
-		while (lexer.token == Token.LITERALINT) {
-			next();
-		}
-	}
+	}	
 
 	private SymbolTable		symbolTable;
 	private Lexer			lexer;
