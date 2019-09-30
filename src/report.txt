@@ -26,8 +26,8 @@ Em todos os testes abaixo, o compilador sinalizou o erro na linha correta (quand
 
 A lista abaixo contém o nome do arquivo de teste, a mensagem que ele sinalizou e a mensagem sugerida pelo arquivo de teste
 
-/home/luciane/Documentos/ufscar/lab-comp/student-made-tests/ER_LEX04.ci
-The compiler message was: "Invalid Character: '#'"
+/home/luciane/Documentos/ufscar/lab-comp/student-made-tests/lexico/ER_LEX06.ci
+The compiler message was: "';' expected"
 The 'cep' message is:      "Unknown character"
 
 

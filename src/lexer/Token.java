@@ -67,8 +67,8 @@ public enum Token {
     VAR("var"),
     VOID("void"),
     WHILE("while"),
-    WRITE("write"),
-    WRITELN("writeln");
+    PRINT("print"),
+    PRINTLN("println");
 
 	Token(String name) {
 		this.name = name;

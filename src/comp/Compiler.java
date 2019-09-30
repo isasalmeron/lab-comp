@@ -368,8 +368,11 @@ public class Compiler {
 		next();
 		check(Token.DOT, "a '.' was expected after 'Out'");
 		next();
-		check(Token.IDCOLON, "'print:' or 'println:' was expected after 'Out.'");
-		next();
+		if (lexer.token == Token.PRINT || lexer.token == Token.PRINTLN) {
+			next();
+		} else {
+			error("'print' or 'println' was expected after 'Out.'");
+		}
 		String printName = lexer.getStringValue();
 		expr();
 	}
