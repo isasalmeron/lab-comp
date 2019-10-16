@@ -7,10 +7,23 @@ package comp;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+
+import ast.BasicValue;
+import ast.ClassDec;
+import ast.Expr;
+import ast.Factor;
+import ast.HighOperator;
 import ast.LiteralInt;
 import ast.MetaobjectAnnotation;
 import ast.Program;
+import ast.Qualifier;
+import ast.Signal;
+import ast.SignalFactor;
+import ast.SimpleExpr;
 import ast.Statement;
+import ast.SumSubExpr;
+import ast.Term;
+import ast.Type;
 import ast.TypeCianetoClass;
 import lexer.Lexer;
 import lexer.Token;
@@ -37,7 +50,7 @@ public class Compiler {
 
 	private Program program(ArrayList<CompilationError> compilationErrorList) {
 		ArrayList<MetaobjectAnnotation> metaobjectCallList = new ArrayList<>();
-		ArrayList<TypeCianetoClass> CianetoClassList = new ArrayList<>();
+		ArrayList<TypeCianetoClass> CianetoClassList = new ArrayList<>();;
 		Program program = new Program(CianetoClassList, metaobjectCallList, compilationErrorList);
 		boolean thereWasAnError = false;
 		while ( lexer.token == Token.CLASS ||
@@ -153,29 +166,38 @@ public class Compiler {
 		if ( getNextToken ) lexer.nextToken();
 	}
 
-	private void classDec() {
+	private ClassDec classDec() {
+		String superclassName = "";
+		
 		if ( lexer.token == Token.ID && lexer.getStringValue().equals("open") ) {
-			// open class
+			lexer.nextToken();
 		}
-		if ( lexer.token != Token.CLASS ) error("'class' expected");
+		
+		if ( lexer.token != Token.CLASS )
+			error("'class' expected");
 		lexer.nextToken();
+		
 		if ( lexer.token != Token.ID )
 			error("Identifier expected");
 		String className = lexer.getStringValue();
 		lexer.nextToken();
+		
 		if ( lexer.token == Token.EXTENDS ) {
 			lexer.nextToken();
 			if ( lexer.token != Token.ID )
 				error("Identifier expected");
-			String superclassName = lexer.getStringValue();
+			superclassName = lexer.getStringValue();
 
 			lexer.nextToken();
 		}
 
 		memberList();
+		
 		if ( lexer.token != Token.END)
 			error("'end' expected");
 		lexer.nextToken();
+		
+		return new ClassDec(className, superclassName);
 
 	}
 
@@ -377,7 +399,7 @@ public class Compiler {
 		expr();
 	}
 
-	private void expr() {
+	private Expr expr() {
 		simpleExpression();
 		
 		if (lexer.token == Token.EQ
@@ -390,6 +412,7 @@ public class Compiler {
 			simpleExpression();
 		}
 
+		return null; // delete later
 	}
 
 	private void fieldDec() {
@@ -412,9 +435,17 @@ public class Compiler {
 
 	}
 
-	private void type() {
-		if ( lexer.token == Token.INT || lexer.token == Token.BOOLEAN || lexer.token == Token.STRING ) {
+	private Type type() {
+		if (lexer.token == Token.INT) {
 			next();
+			return Type.intType;
+		
+		} else if (lexer.token == Token.BOOLEAN) {
+			next();
+			return Type.booleanType;
+		} else if (lexer.token == Token.STRING) {
+			next();
+			return Type.stringType;
 		}
 		else if ( lexer.token == Token.ID ) {
 			next();
@@ -422,34 +453,42 @@ public class Compiler {
 		else {
 			this.error("A type was expected");
 		}
-
+		
+		return null;
 	}
 
-	private void qualifier() {
+	private Qualifier qualifier() {
 		if ( lexer.token == Token.PRIVATE ) {
 			next();
+			return new Qualifier(Token.PRIVATE);
 		}
 		else if ( lexer.token == Token.PUBLIC ) {
 			next();
+			return new Qualifier(Token.PUBLIC);
 		}
 		else if ( lexer.token == Token.OVERRIDE ) {
 			next();
 			if ( lexer.token == Token.PUBLIC ) {
 				next();
+				return new Qualifier(Token.OVERRIDE, Token.PUBLIC);
 			}
 		}
 		else if ( lexer.token == Token.FINAL ) {
 			next();
 			if ( lexer.token == Token.PUBLIC ) {
 				next();
+				return new Qualifier(Token.FINAL, Token.PUBLIC);
 			}
 			else if ( lexer.token == Token.OVERRIDE ) {
 				next();
 				if ( lexer.token == Token.PUBLIC ) {
 					next();
+					return new Qualifier(Token.FINAL, Token.OVERRIDE, Token.PUBLIC);
 				}
 			}
 		}
+		
+		return null;
 	}
 	/**
 	 * change this method to 'private'.
@@ -506,15 +545,26 @@ public class Compiler {
 		}
 	}
 
-	private void basicValue() {
-		if (lexer.token == Token.LITERALINT
-				|| lexer.token == Token.TRUE
-				|| lexer.token == Token.FALSE
-				||lexer.token == Token.LITERALSTRING) {
+	private BasicValue basicValue() {
+		if (lexer.token == Token.LITERALINT) {
+			final Integer value = lexer.getNumberValue();
 			next();
+			return new BasicValue(value);
+		} else if (lexer.token == Token.TRUE) {
+			next();
+			return new BasicValue(true);
+		} else if (lexer.token == Token.FALSE) {
+			next();
+			return new BasicValue(false);
+		} else if (lexer.token == Token.LITERALSTRING) {
+			final String value = lexer.getLiteralStringValue();
+			next();
+			return new BasicValue(value);
 		} else {
 			error("A basic value was expected");
 		}
+		
+		return null;
 	}
 
 	private void compStatement() {
@@ -546,15 +596,17 @@ public class Compiler {
 		}
 	}
 
-	private void highOperator() {
+	private HighOperator highOperator() {
 		if (lexer.token == Token.MULT || lexer.token == Token.DIV || lexer.token == Token.AND) {
 			next();
 		} else {
 			error("'*' or '/' or '&&' operator was expected");
 		}
+		
+		return null; // delete later
 	}
 	
-	private void simpleExpression() {
+	private SimpleExpr simpleExpression() {
 		sumSubExpression();
 		
 		while (lexer.token == Token.PLUS) {
@@ -565,9 +617,10 @@ public class Compiler {
 			}
 		}
 		
+		return null; // delete later		
 	}
 
-	private void sumSubExpression() {
+	private SumSubExpr sumSubExpression() {
 		term();
 		
 		while (lexer.token == Token.PLUS || lexer.token == Token.MINUS || lexer.token == Token.OR) {
@@ -575,6 +628,7 @@ public class Compiler {
 			term();
 		}
 		
+		return null; // delete later
 	}
 
 	private void lowOperator() {
@@ -585,29 +639,33 @@ public class Compiler {
 		}
 	}
 
-	private void term() {
+	private Term term() {
 		signalFactor();
 		
 		while (lexer.token == Token.MULT || lexer.token == Token.DIV || lexer.token == Token.AND) {
 			highOperator();
 			signalFactor();
 		}
+		
+		return null; // delete later
 	}
 
-	private void signalFactor() {
+	private SignalFactor signalFactor() {
 		if (lexer.token == Token.PLUS || lexer.token == Token.MINUS) {
 			signal();
 		}
 		
 		factor();
+		
+		return null; // delete later
 	}
 	
-	private void factor() {
+	private Factor factor() {
 		if (lexer.token == Token.LITERALINT
 				|| lexer.token == Token.TRUE
 				|| lexer.token == Token.FALSE
 				||lexer.token == Token.LITERALSTRING) {
-			next();
+			basicValue();
 		} else if (lexer.token == Token.LEFTPAR) {
 			next();
 			expr();
@@ -632,6 +690,8 @@ public class Compiler {
 				next();
 			}
 		}
+		
+		return null; // delete later
 	}
 
 	private void primaryExpr() {
@@ -706,12 +766,14 @@ public class Compiler {
 	}
 
 
-	private void signal() {
+	private Signal signal() {
 		if (lexer.token == Token.PLUS || lexer.token == Token.MINUS) {
 			next();
 		} else {
 			error("'+' or '-' was expected");
 		}
+		
+		return null; // delete later	
 	}
 	
 	private void paramDec() {

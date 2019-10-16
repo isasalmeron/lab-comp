@@ -41,10 +41,15 @@ public class Program {
 	public ArrayList<CompilationError> getCompilationErrorList() {
 		return compilationErrorList;
 	}
+	
+	public void setMainJavaClassName(String mainJavaClassName) {
+		this.mainJavaClassName = mainJavaClassName;
+	}
 
 	
 	private ArrayList<TypeCianetoClass> classList;
 	private ArrayList<MetaobjectAnnotation> metaobjectCallList;
+	private String mainJavaClassName;
 	
 	ArrayList<CompilationError> compilationErrorList;
 }
