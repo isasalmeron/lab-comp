@@ -449,6 +449,7 @@ public class Comp {
 		ArrayList<TupleCheckNameText> ta = new ArrayList<>();
 		for ( Entry<String, String> entry : checkNameFilenameList.entrySet() ) {
 			String checkName = entry.getKey();
+			int numFiles = 0;
 			Integer importance = Comp.testNameWeightMap.get(checkName);
 			if ( importance == null ) {
 				partialReport.append("*******************************\nFailed to produce report: check name '" +
@@ -460,14 +461,16 @@ public class Comp {
 			s.append("    " + checkName + "\r\n");
 			if ( filenameListStr.indexOf(" ") < 0 ) {
 				s.append("        " + filenameListStr + "\r\n");
+				++numFiles;
 			}
 			else {
 				String []filenameList = filenameListStr.split(" ");
 				for ( String filename : filenameList ) {
 					s.append("        " + filename + "\r\n");
+					++numFiles;
 				}
 			}
-			ta.add(new TupleCheckNameText(checkName, importance, s.toString()));
+			ta.add(new TupleCheckNameText(checkName, importance, s.toString(), numFiles));
 		}
 		Collections.sort(ta);
 		partialReport.append("Os testes são categorizados por importância: 'Muito importante', 'Importante', 'pouco importante'\r\n");
@@ -480,13 +483,13 @@ public class Comp {
 		for ( TupleCheckNameText t : ta ) {
 			if ( compilerFailed ) {
 				if ( t.importance >= 5 ) {
-					++Comp.numVeryImportantFailed;
+					Comp.numVeryImportantFailed += t.numFiles;
 				}
 				else if ( t.importance > 1 ) {
-					++Comp.numImportantFailed;
+					Comp.numImportantFailed += t.numFiles;
 				}
 				else {
-					++Comp.numLittleImportantFailed;
+					Comp.numLittleImportantFailed += t.numFiles;
 				}
 			}
 			if ( !alreadPrintMessage3 && t.importance < 5 && t.importance > 1 ) {
@@ -1061,10 +1064,11 @@ public class Comp {
 
 
 class TupleCheckNameText implements Comparable<TupleCheckNameText> {
-	public TupleCheckNameText(String checkName, int importance, String text) {
+	public TupleCheckNameText(String checkName, int importance, String text, int numFiles) {
 		this.checkName = checkName;
 		this.importance = importance;
 		this.text = text;
+		this.numFiles = numFiles;
 	}
 
 	@Override
@@ -1083,4 +1087,6 @@ class TupleCheckNameText implements Comparable<TupleCheckNameText> {
 	String checkName;
 	int importance;
 	String text;
+	int numFiles;
+
 }
