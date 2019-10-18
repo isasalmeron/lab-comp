@@ -5,6 +5,7 @@
 
 package ast;
 
+//faz sentido ser extends de Statement?
 abstract public class Expr extends Statement {
     abstract public void genC( PW pw, boolean putParenthesis );
 	@Override

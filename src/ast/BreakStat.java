@@ -4,7 +4,7 @@
  */
 
 package ast;
-
-public class HighOperator extends Term {
-
+//criei mas fiquei confusa se deveria ter criado
+public class BreakStat extends Statement {
+    
 }

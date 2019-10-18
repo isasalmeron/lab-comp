@@ -15,8 +15,9 @@ abstract public class Type {
     public static Type intType = new TypeInt();
     public static Type stringType = new TypeString();
     public static Type undefinedType = new TypeUndefined();
-    public static Type nullType = new TypeNull();
-
+  //nao sei se precisa trocar pra nilType, tanto a variavel, função e nome do arquivo
+    public static Type nullType = new TypeNull(); 
+    
     public String getName() {
         return name;
     }

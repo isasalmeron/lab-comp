@@ -8,7 +8,7 @@ package ast;
 public class TypeNull extends Type {
 
 	public TypeNull() {
-		super("NullType");
+		super("nil");	//nao sei se fiz certo
 	}
 
 	@Override

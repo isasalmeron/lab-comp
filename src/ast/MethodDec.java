@@ -5,6 +5,9 @@
 
 package ast;
 
-public class HighOperator extends Term {
-
+public class MethodDec extends Member {
+    
+    public MethodDec() { 
+     
+    }
 }
