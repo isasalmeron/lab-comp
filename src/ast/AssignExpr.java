@@ -5,11 +5,22 @@
 
 package ast;
 
-public class AssignExpr extends Statement {
+public class AssignExpr extends Expr {
+	
+	private Expr leftExpr;
+	private Expr rightExpr;
     
 	public AssignExpr(Expr leftExpr, Expr rightExpr) {
 		this.leftExpr = leftExpr;
 		this.rightExpr = rightExpr;
+	}
+	
+	@Override
+	public void genJava(PW pw) {
+		leftExpr.genJava(pw);
+		pw.print(" = ");
+		rightExpr.genJava(pw);
+		pw.print(";");
 	}
 	
 	public Expr getLeftExpr() {
@@ -19,7 +30,4 @@ public class AssignExpr extends Statement {
 	public Expr getRightExpr() {
 		return rightExpr;
 	}
-	
-	private Expr leftExpr;
-	private Expr rightExpr;
 }

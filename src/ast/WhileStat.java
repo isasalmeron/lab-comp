@@ -8,20 +8,36 @@ package ast;
 import java.util.ArrayList;
 
 public class WhileStat extends Statement {
+	
+	private Expr expr;
+	private ArrayList<Statement> statementList;
     
-	public WhileStat(Expr expr, ArrayList<Statement> statemtList) {
+	public WhileStat(Expr expr, ArrayList<Statement> statementList) {
 		this.expr = expr;
-		this.statemtList = statemtList;
+		this.statementList = statementList;
+	}
+	
+	@Override
+	public void genJava(PW pw) {
+		pw.print("while (");
+		expr.genJava(pw);
+		pw.print(") {");
+		pw.add();
+		
+		int size = statementList.size();
+		for (int i = 0; i < size; i++) {
+			statementList.get(i).genJava(pw);
+		}
+		
+		pw.sub();
+		pw.print("}");
 	}
 	
 	public Expr getExpr() {
-		return expr;
+		return this.expr;
 	}
 
 	public ArrayList<Statement> getStatementList() {
-		return statemtList;
+		return this.statementList;
 	}
-	
-	private Expr expr;
-	private ArrayList<Statement> statemtList;
 }

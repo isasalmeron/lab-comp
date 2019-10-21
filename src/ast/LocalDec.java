@@ -5,22 +5,32 @@
 
 package ast;
 
-//tem que adc o idList
 public class LocalDec extends Statement {
+	
+	private Type type;
+	private IdList idList;
+	private Expr expr;
     
-    public LocalDec(Type type, Expr expr) { 
+    public LocalDec(Type type, IdList idList, Expr expr) { 
     	this.type = type;
+    	this.idList = idList;
     	this.expr = expr;
     }
     
+    @Override
+	public void genJava(PW pw) {
+		type.getJavaName();		
+	}
+    
 	public Type getType() {
-		return type;
+		return this.type;
+	}
+	
+	public IdList getIdList() {
+		return this.idList;
 	}
 
 	public Expr getExpr() {
-		return expr;
+		return this.expr;
 	}
-
-	private Type type;
-	private Expr expr;
 }

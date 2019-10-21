@@ -6,12 +6,15 @@
 package ast;
 
 public class LiteralString extends Expr {
+	
+	private String literalString;
     
-    public LiteralString( String literalString ) { 
+    public LiteralString(String literalString) { 
         this.literalString = literalString;
     }
     
-    public void genC( PW pw, boolean putParenthesis ) {
+    @Override
+    public void genJava(PW pw) {
         pw.print(literalString);
     }
 
@@ -19,6 +22,4 @@ public class LiteralString extends Expr {
     public Type getType() {
         return Type.stringType;
     }
-    
-    private String literalString;
 }

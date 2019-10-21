@@ -5,18 +5,26 @@
 
 package ast;
 
+import java.util.ArrayList;
+
 public class SumSubExpr extends Expr {
+	
+	private final ArrayList<Term> terms;
+	private final ArrayList<String> lowOperators;
+	
+	public SumSubExpr(final ArrayList<Term> terms, final ArrayList<String> lowOperators) {
+		this.terms = terms;
+		this.lowOperators = lowOperators;
+	}
 
 	@Override
-	public void genC(PW pw, boolean putParenthesis) {
-		// TODO Auto-generated method stub
+	public void genJava(PW pw) {
+		terms.get(0).genJava(pw);
 		
+		int size = terms.size();
+		for (int i = 1; i < size; i++) {
+			pw.print(lowOperators.get(i));
+			terms.get(i).genJava(pw);
+		}
 	}
-
-	@Override
-	public Type getType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

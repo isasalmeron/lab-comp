@@ -5,29 +5,46 @@
 
 package ast;
 
-import java.util.ArrayList;
-
 public class IfStat extends Statement {
+	
+	private Expr expr;
+	private Statement ifStatement;
+	private Statement elseStatement;
     
-	public IfStat(Expr expr, ArrayList<Statement> ifStatemtList, ArrayList<Statement> elseStatemtList) {
+	public IfStat(Expr expr, Statement ifStatement, Statement elseStatement) {
 		this.expr = expr;
-		this.ifStatemtList = ifStatemtList;
-		this.elseStatemtList = elseStatemtList;
+		this.ifStatement = ifStatement;
+		this.elseStatement = elseStatement;
+	}
+	
+	@Override
+	public void genJava(PW pw) {
+		pw.print("if ");
+		expr.genJava(pw);
+		pw.print("{");
+		pw.add();
+		ifStatement.genJava(pw);
+		pw.sub();
+		pw.print("}");
+		
+		if (elseStatement != null) {
+			pw.print(" else {");
+			pw.add();
+			elseStatement.genJava(pw);
+			pw.sub();
+			pw.print("}");
+		}
 	}
 	
 	public Expr getExpr() {
 		return expr;
 	}
 
-	public ArrayList<Statement> getIfStatemtList() {
-		return ifStatemtList;
+	public Statement getIfStatement() {
+		return ifStatement;
 	}
 	
-	public ArrayList<Statement> getElseStatemtList() {
-		return elseStatemtList;
+	public Statement getElseStatement() {
+		return elseStatement;
 	}
-	
-	private Expr expr;
-	private ArrayList<Statement> ifStatemtList;
-	private ArrayList<Statement> elseStatemtList;
 }

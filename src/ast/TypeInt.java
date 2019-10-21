@@ -11,7 +11,7 @@ public class TypeInt extends Type {
         super("int");
     }
     
-   public String getCname() {
+   public String getJavaName() {
       return "int";
    }
 

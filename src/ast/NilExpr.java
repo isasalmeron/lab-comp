@@ -5,10 +5,11 @@
 
 package ast;
 
-public class Term {
-	
-	public void genJava(PW pw) {
-		// TODO
-	}
+public class NilExpr extends Expr {
 
+	@Override
+	public void genJava(PW pw) {
+		pw.print("null");
+		
+	}
 }

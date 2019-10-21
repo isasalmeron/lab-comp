@@ -5,10 +5,6 @@
 
 package ast;
 
-public class Term {
-	
-	public void genJava(PW pw) {
-		// TODO
-	}
+public class Member {
 
 }

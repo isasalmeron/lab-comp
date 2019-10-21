@@ -12,7 +12,7 @@ import lexer.Token;
 
 public class Qualifier {
 	
-	private ArrayList<Token> qualifiers;
+	private ArrayList<Token> qualifiers = new ArrayList<>();
 	
 	public Qualifier(final Token q) {
 		qualifiers.add(q);
@@ -24,5 +24,9 @@ public class Qualifier {
 	
 	public Qualifier(final Token q1, final Token q2, final Token q3) {
 		qualifiers.addAll(Arrays.asList(q1, q2, q3));
+	}
+	
+	public ArrayList<Token> getQualifiers() {
+		return this.qualifiers;
 	}
 }

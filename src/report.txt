@@ -2,15 +2,15 @@ Relatório do Compilador
 
 Resumo
 _________________________________________________________________________
-MI:  18            I: 7              PI: 21            Exc: 0
-Dev: 40/133/30%    LE: 37/133/27%    SSE: 30/50/60%    
+MI:  46            I: 8              PI: 21            Exc: 0
+Dev: 53/134/39%    LE: 26/134/19%    SSE: 19/49/38%    
 
 MI = muito importante, I = importante, PI = pouco importante, Exc = exceções
 Dev = deveria ter sinalizado, LE = sinalizou linha errada, SSE = sinalizado sem erro
 _________________________________________________________________________
 
-Número de testes 'Muito importantes' em que o compilador falhou: 18
-Número de testes 'Importantes' em que o compilador falhou: 7
+Número de testes 'Muito importantes' em que o compilador falhou: 46
+Número de testes 'Importantes' em que o compilador falhou: 8
 Número de testes 'Pouco importantes' em que o compilador falhou: 21
 
 O compilador falhou em testar alguns aspectos (construções) de Cianeto. A lista abaixo consiste de entradas da forma 
@@ -53,6 +53,7 @@ Testes 'Muito importantes' em que o compilador falhou:
 
     identifierNotFound
         ER_SEM91.ci
+        ER_SEM100.ci
         ER_SEM62.ci
 
     methodFieldEqualNames
@@ -85,8 +86,6 @@ Testes 'Muito importantes' em que o compilador falhou:
 
     typeErrorEqualEqualNotEqual
         ER_SEM58.ci
-        OK_SEM04.ci
-        OK_SEM03.ci
         ER_SEM57.ci
 
     supertypeAssignSelf
@@ -110,9 +109,6 @@ Testes 'importantes' em que o compilador falhou:
 
     expressionExpected
         ER_SEM36.ci
-
-    scopeLocalVarField
-        OK_SEM06.ci
 
     breakOutsideWhileRepeatUntil
         ER_SEM50.ci
@@ -154,9 +150,6 @@ Testes 'pouco importantes' em que o compilador falhou
     assert
         OK_SEM17.ci
 
-    selfAsExpression
-        OK_SEM09.ci
-
     openAsIdentifier
         OK_SEM11.ci
 
@@ -164,6 +157,7 @@ Testes 'pouco importantes' em que o compilador falhou
         OK_QUEUE.ci
 
     parametersInMethodRunOfClassProgram
+        ER_SEM79.ci
         ER_SEM82.ci
 
     missingRunMethodInProgram
@@ -205,16 +199,20 @@ Testes 'Muito importantes' em que o compilador acertou:
         ER_SEM17.ci
         ER_SEM13.ci
 
+    typeErrorEqualEqualNotEqual
+        OK_SEM04.ci
+        OK_SEM03.ci
+
 
 Testes 'importantes' em que o compilador acertou:
     localVarSameMethodName
         OK_SEM13.ci
 
+    scopeLocalVarField
+        OK_SEM06.ci
+
 
 Testes 'pouco importantes' em que o compilador acertou
-    parametersInMethodRunOfClassProgram
-        ER_SEM79.ci
-
     illegalClassName
         ER_SEM48.ci
         ER_SEM49.ci
@@ -222,6 +220,9 @@ Testes 'pouco importantes' em que o compilador acertou
     booleanExprRepeatUntil
         ER_SEM89.ci
         ER_SEM88.ci
+
+    selfAsExpression
+        OK_SEM09.ci
 
     illegalTypeOrIdentifier
         ER_SEM24.ci
@@ -237,9 +238,9 @@ Testes 'pouco importantes' em que o compilador acertou
 
 _________________________________________________________________________
 
-40 de um total de 133 erros que deveriam ser sinalizados não o foram (30%)
-37 erros foram sinalizados na linha errada (27%)
-30 erros foram sinalizados em 50 arquivos sem erro (60%)
+53 de um total de 134 erros que deveriam ser sinalizados não o foram (39%)
+26 erros foram sinalizados na linha errada (19%)
+19 erros foram sinalizados em 49 arquivos sem erro (38%)
 _________________________________________________________________________
 
 Erros que deveriam ser sinalizados mas não foram:
@@ -250,9 +251,13 @@ ER_SEM68.ci, 15, Method 'p' was not found in class 'Program' or its superclasses
 
 ER_SEM16.ci, 12, Operator '-' does not accepts 'boolean' expressions (comp.Compiler.signalFactor())
 
+ER_SEM58.ci, 26, Incompatible types cannot be compared with '!=' because the result will always be 'false' (comp.Compiler.expr())
+
 ER_SEM05.ci, 11, 'int' cannot be assigned to 'boolean' (comp.Compiler.assignExprLocalDec())
 
 ER_SEM32.ci, 18, Method 'm' is being redeclared (comp.Compiler.methodDec())
+
+ER_SEM86.ci, 13, Class 'A' was not found (comp.Compiler.factor())
 
 ER_SIN58.ci, 15, ')' expected (comp.Compiler.factor())
 
@@ -274,9 +279,15 @@ ER_SEM08.ci, 13, type boolean does not support operation '+' (comp.Compiler.simp
 
 ER_SEM18.ci, 10, Type 'k' was not found (comp.Compiler.localDec())
 
+ER_SEM28.ci, 16, Variable 'i' is being redeclared (comp.Compiler.localDec())
+
 ER_SEM14.ci, 11, Attempt to print a boolean expression
 
+ER_SEM79.ci, 13, Method 'run:' of class 'Program' cannot take parameters (comp.Compiler.classDec())
+
 ER_SIN06.ci, 7, Expression expected (comp.Compiler.factor())
+
+ER_SIN05.ci, 14, Expression expected (comp.Compiler.factor())
 
 ER_SEM33.ci, 17, Method 'm' is being redeclared (comp.Compiler.methodDec())
 
@@ -290,6 +301,8 @@ ER_SEM06.ci, 12, 'operator expected' or 'variable expected at the left-hand side
 
 ER_SEM55.ci, 10, Illegal types with ++, only Int and String are allowed
 
+ER_SEM15.ci, 10, Operator '!' does not accepts 'int' values (comp.Compiler.factor())
+
 ER_SEM12.ci, 10, operator '+' of 'Int' expects an 'Int' value (comp.Compiler.simpleExpr())
 
 ER_SEM71.ci, 21, Method 'set:' was not found in class 'A' or its superclasses (comp.Compiler.factor())
@@ -297,6 +310,8 @@ ER_SEM71.ci, 21, Method 'set:' was not found in class 'A' or its superclasses (c
 ER_SEM56.ci, 12, Illegal types with ++, only Int and String are allowed
 
 ER_SIN08.ci, 7, Command ' Out.print' without arguments (comp.Compiler.writeStatement())
+
+ER_SEM31.ci, 16, Method 'i' has name equal to an instance variable (comp.Compiler.methodDec())
 
 ER_SEM36.ci, 26, Expression expected in the right-hand side of assignment (comp.Compiler.assignExprLocalDec())
 
@@ -306,9 +321,13 @@ ER_SEM80.ci, 13, Method 'run' of class 'Program' with a return value type (comp.
 
 ER_SEM26.ci, 15, 'break' statement found outside a 'while' or 'repeat-until' statement (comp.Compiler.statement()))
 
+ER_SEM44.ci, 27, Command 'write' does not accept objects (comp.Compiler.writeStatement())
+
 ER_SEM37.ci, 26, Method 'set' was not found in class 'A' or its superclasses (comp.Compiler.factor())
 
 ER_SEM35.ci, 14, Illegal 'return' statement. Method returns 'void' (comp.Compiler.returnStatement())
+
+ER_SIN40.ci, 12, Attempt to declare public instance variable 'i' (comp.Compiler.classDec())
 
 ER_SEM59.ci, 26, Method 'p' was not found in the public interface of 'A' or ts superclasses (comp.Compiler.factor())
 
@@ -318,18 +337,26 @@ ER_SEM41.ci, 23, Type error: the type of the expression of the right-hand side i
 
 ER_SEM45.ci, 11, Identifier 'run' was not declared
 
+ER_SIN37.ci, 13, Expression expected (comp.Compiler.factor())
+
+ER_SEM62.ci, 17, Identifier 'a' was not found (comp.Compiler.factor())
+
 ER_SEM42.ci, 16, Type error: type of the left-hand side of the assignment is a basic type and the type of the right-hand side is a class (comp.Compiler.assignExprLocalDec())
+
+ER_SIN44.ci, 16, Attempt to declare public instance variable 'i' (comp.Compiler.classDec())
 
 ER_SEM46.ci, 10, 'super' used in class 'Program' that does not have a superclass (comp.Compiler.factor())
 
 ER_SIN04.ci, 11, Statement expected (comp.Compiler.assignExprLocalDec())
 
+ER_SEM57.ci, 26, Incompatible types cannot be compared with '==' because the results will always be 'false' (comp.Compiler.expr())
+
 ######################################################
 Erros que foram sinalizados na linha errada:
 
-ER_SEM58.ci
-    correto:    26, Incompatible types cannot be compared with '!=' because the result will always be 'false' (comp.Compiler.expr())
-    sinalizado: 29, 'end' expected
+ER_SEM_EXTRA01.ci
+    correto:    13,  
+    sinalizado: 34, 'In' was expected
 
 ER_SIN21.ci
     correto:    9, ';' missing 
@@ -338,14 +365,6 @@ ER_SIN21.ci
 ER_SEM38.ci
     correto:    21, Type error: type of the right-hand side of the assignment is not a subclass of the left-hand side (comp.Compiler.assignExprLocalDec())
     sinalizado: 11, 'class' expected
-
-ER_LEX_EXTRA01.ci
-    correto:    29, ';' expected 
-    sinalizado: 14, '{' expected
-
-ER_SEM86.ci
-    correto:    13, Class 'A' was not found (comp.Compiler.factor())
-    sinalizado: 16, 'end' expected
 
 ER_SEM39.ci
     correto:    24, Type error: type of the expression returned is not subclass of the method return type (comp.Compiler.returnStatement())
@@ -357,23 +376,23 @@ ER_SEM53.ci
 
 ER_SIN_EXTRA02.ci
     correto:    40,  
-    sinalizado: 14, '{' expected
+    sinalizado: 35, 'In' was expected
 
 ER_SEM91.ci
     correto:    12,  
-    sinalizado: 10, 'end' expected
+    sinalizado: 29, 'In' was expected
 
 ER_SIN100.ci
     correto:    10, missing 'return' statement 
-    sinalizado: 8, 'end' expected
-
-ER_SIN42.ci
-    correto:    10,  
-    sinalizado: 9, 'end' expected
+    sinalizado: 22, 'In' was expected
 
 ER_SEM_EXTRA02.ci
     correto:    36,  
-    sinalizado: 14, '{' expected
+    sinalizado: 35, 'In' was expected
+
+ER_SEM100.ci
+    correto:    26, Identifer 'error' was not found 
+    sinalizado: 25, 'In' was expected
 
 ER_SEM51.ci
     correto:    21, Method 'put' is being redefined in subclass 'B' with a signature different from the method of superclass 'A' (comp.Compiler.methodDec())
@@ -382,14 +401,6 @@ ER_SEM51.ci
 ER_SEM02.ci
     correto:    9, Variable 'I' was not declared (comp.Compiler.assignExprLocalDec())
     sinalizado: 12, ';' expected
-
-ER_SEM28.ci
-    correto:    16, Variable 'i' is being redeclared (comp.Compiler.localDec())
-    sinalizado: 14, 'end' expected
-
-ER_SIN05.ci
-    correto:    14, Expression expected (comp.Compiler.factor())
-    sinalizado: 9, '{' expected
 
 ER_SEM54.ci
     correto:    13, 'override' expected before overridden method 
@@ -407,25 +418,17 @@ ER_SEM30.ci
     correto:    24, Method 'put' of subclass 'B' has a signature different from method inherited from superclass 'A' (comp.Compiler.methodDec())
     sinalizado: 12, 'class' expected
 
-ER_SEM15.ci
-    correto:    10, Operator '!' does not accepts 'int' values (comp.Compiler.factor())
-    sinalizado: 13, 'end' expected
-
 ER_SEM11.ci
     correto:    15, non-boolean expression in 'while' command (comp.Compiler.whileStatement())
     sinalizado: 19, 'end' expected
 
 ER_SEM82.ci
     correto:    13,  
-    sinalizado: 11, 'end' expected
+    sinalizado: 16, 'In' was expected
 
 ER_SIN22.ci
     correto:    10, ';' missing 
     sinalizado: 8, 'In' was expected
-
-ER_SEM31.ci
-    correto:    16, Method 'i' has name equal to an instance variable (comp.Compiler.methodDec())
-    sinalizado: 14, 'end' expected
 
 ER_SEM47.ci
     correto:    26, Method 'm' was not found in superclass 'B' or its superclasses (comp.Compiler.factor())
@@ -447,54 +450,26 @@ ER_SEM61.ci
     correto:    37, Method 's' was not found in class 'C' or its superclasses (comp.Compiler.factor())
     sinalizado: 9, 'class' expected
 
-ER_SEM44.ci
-    correto:    27, Command 'write' does not accept objects (comp.Compiler.writeStatement())
-    sinalizado: 8, 'end' expected
-
-ER_SIN37.ci
-    correto:    13, Expression expected (comp.Compiler.factor())
-    sinalizado: 16, 'end' expected
-
 ER_SEM29.ci
     correto:    22, Method 'put' of the subclass 'B' has a signature different from the same method of superclass 'A' (comp.Compiler.methodDec() or comp.Compiler.classDec())
     sinalizado: 11, 'class' expected
-
-ER_SEM62.ci
-    correto:    17, Identifier 'a' was not found (comp.Compiler.factor())
-    sinalizado: 11, 'end' expected
-
-ER_SIN_EXTRA01.ci
-    correto:    28,  
-    sinalizado: 14, '{' expected
 
 ER_SIN20.ci
     correto:    6, ';' missing 
     sinalizado: 7, ';' expected
 
-ER_SEM57.ci
-    correto:    26, Incompatible types cannot be compared with '==' because the results will always be 'false' (comp.Compiler.expr())
-    sinalizado: 29, 'end' expected
-
 ######################################################
 Erros que foram sinalizados mas não deveriam ter sido:
 
-OK_FACT.ci, 19, '{' expected
-
-OK_FIELDDEC.ci, 17, 'end' expected
-
 OK_SIN16.ci, 23, ';' expected
-
-OK_SIN09.ci, 17, 'end' expected
-
-OK_FIB.ci, 19, '{' expected
 
 OK_SEM18.ci, 24, ';' expected
 
-OK_SIN02.ci, 27, 'end' expected
+OK_SIN02.ci, 33, 'end' expected
 
 OK_SEM14.ci, 16, 'class' expected
 
-OK_CHK07.ci, 19, 'end' expected
+OK_CHK07.ci, 53, An identifier or identifer: was expected after 'func'
 
 OK_SEM10.ci, 11, 'class' expected
 
@@ -506,37 +481,23 @@ OK_SEM17.ci, 11, 'In' was expected
 
 OK_SEM05.ci, 13, 'class' expected
 
-OK_SEM06.ci, 13, 'end' expected
+OK_SIN11.ci, 29, 'end' expected
 
-OK_SEM09.ci, 12, '{' expected
-
-OK_SIN11.ci, 28, 'end' expected
-
-OK_MATH.ci, 18, '{' expected
+OK_MATH.ci, 55, 'In' was expected
 
 OK_SEM15.ci, 15, 'class' expected
 
 OK_SEM12.ci, 10, 'class' expected
 
-OK_SEM16.ci, 10, missing keyword 'until'
+OK_SEM16.ci, 12, ';' expected
 
 OK_SEM07.ci, 19, 'end' expected
 
 OK_CALC.ci, 22, 'class' expected
 
-OK_QUEUE.ci, 17, 'end' expected
-
-OK_SIN04.ci, 26, 'end' expected
-
-OK_SEM04.ci, 27, 'end' expected
+OK_QUEUE.ci, 25, An identifier or identifer: was expected after 'func'
 
 OK_SEM08.ci, 11, 'class' expected
-
-OK_SIN14.ci, 17, 'end' expected
-
-OK_SIN08.ci, 14, '{' expected
-
-OK_SEM03.ci, 29, 'end' expected
 
 ######################################################
 Em todos os testes abaixo, o compilador sinalizou o erro na linha correta (quando o teste tinha erros) ou não sinalizou o erro (quando o teste NÃO tinha erros). Mas é necessário conferir se as mensagens emitidas pelo compilador são compatíveis com as mensagens de erro sugeridas pelas chamadas aos metaobjetos dos testes. 
@@ -558,14 +519,14 @@ The compiler message was: "missing keyword 'until'"
 The 'cep' message is:      "'}' not expected before 'until'"
 
 
-ER_SEM_EXTRA01.ci
-The compiler message was: "'{' expected"
-The 'cep' message is:      ""
-
-
 ER_SIN41.ci
 The compiler message was: "Identifier expected"
 The 'cep' message is:      "Identifier expected"
+
+
+ER_LEX_EXTRA01.ci
+The compiler message was: "';' expected"
+The 'cep' message is:      "';' expected"
 
 
 ER_SEM24.ci
@@ -591,6 +552,11 @@ The 'cep' message is:      "Identifier starting with underscore"
 ER_SEM89.ci
 The compiler message was: "';' expected"
 The 'cep' message is:      "boolean expression expected in a repeat-until statement"
+
+
+ER_SIN42.ci
+The compiler message was: "Invalid Character: ':'"
+The 'cep' message is:      ""
 
 
 ER_SEM21.ci
@@ -648,11 +614,6 @@ The compiler message was: "'{' expected"
 The 'cep' message is:      "'{' expected"
 
 
-ER_SEM79.ci
-The compiler message was: "'{' expected"
-The 'cep' message is:      "Method 'run:' of class 'Program' cannot take parameters"
-
-
 ER_SIN63.ci
 The compiler message was: "';' expected"
 The 'cep' message is:      "';' expected"
@@ -694,12 +655,12 @@ The 'cep' message is:      "Method 'readInt:' was not found"
 
 
 ER_SIN33.ci
-The compiler message was: "'{' expected"
+The compiler message was: "A parameter name was expected"
 The 'cep' message is:      "Identifier expected"
 
 
 ER_SIN36.ci
-The compiler message was: "'{' expected"
+The compiler message was: "A type was expected"
 The 'cep' message is:      "Identifier expected"
 
 
@@ -753,11 +714,6 @@ The compiler message was: "';' expected"
 The 'cep' message is:      "Missing 'Out.'"
 
 
-ER_SIN40.ci
-The compiler message was: "'end' expected"
-The 'cep' message is:      "Attempt to declare public instance variable 'i'"
-
-
 ER_SEM20.ci
 The compiler message was: "A variable name was expected"
 The 'cep' message is:      "Identifier expected"
@@ -778,11 +734,6 @@ The compiler message was: "';' expected"
 The 'cep' message is:      "'readInt' was not declared"
 
 
-ER_SIN44.ci
-The compiler message was: "'end' expected"
-The 'cep' message is:      "Attempt to declare public instance variable 'i'"
-
-
 ER_SIN59.ci
 The compiler message was: "missing keyword 'until'"
 The 'cep' message is:      "'until' expected"
@@ -791,6 +742,11 @@ The 'cep' message is:      "'until' expected"
 ER_SEM13.ci
 The compiler message was: "'In' was expected"
 The 'cep' message is:      "Unknown method 'readBoolean'"
+
+
+ER_SIN_EXTRA01.ci
+The compiler message was: "'{' expected"
+The 'cep' message is:      ""
 
 
 ER_LEX06.ci
@@ -804,7 +760,7 @@ The 'cep' message is:      "Expression expected OR invalid sequence of symbols"
 
 
 ER_SIN32.ci
-The compiler message was: "'{' expected"
+The compiler message was: "A type was expected"
 The 'cep' message is:      "Type expected"
 
 

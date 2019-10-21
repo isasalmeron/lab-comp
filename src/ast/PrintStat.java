@@ -6,14 +6,21 @@
 package ast;
 
 public class PrintStat extends Statement {
+	
+	private SimpleExpr expr;
 
-	public PrintStat(Expr expr) {
+	public PrintStat(SimpleExpr expr) {
 		this.expr = expr;
+	}
+	
+	@Override
+	public void genJava(PW pw) {
+		pw.print("System.out.println(");
+		expr.genJava(pw);
+		pw.print(");");
 	}
 
 	public Expr getExpr() {
-		return expr;
+		return this.expr;
 	}
-
-	private Expr expr;
 }

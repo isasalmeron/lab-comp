@@ -217,37 +217,43 @@ public class Compiler {
 
 	private MethodDec methodDec() {
 		lexer.nextToken();
-		if ( lexer.token == Token.ID ) {
-			// unary method
-			lexer.nextToken();
-
-		}
-		else if ( lexer.token == Token.IDCOLON ) {
-			// keyword method. It has parameters
-
-		}
-		else {
+		
+		if (lexer.token != Token.ID && lexer.token != Token.IDCOLON) {
 			error("An identifier or identifer: was expected after 'func'");
 		}
-		if ( lexer.token == Token.MINUS_GT ) {
+		
+		if (lexer.token == Token.IDCOLON) {
+			// keyword method. It has parameters
+			lexer.nextToken();
+			formalParamDec();
+		} else if (lexer.token == Token.ID) {
+			// unary method
+			lexer.nextToken();
+		}
+		
+		if (lexer.token == Token.MINUS_GT) {
 			// method declared a return type
 			lexer.nextToken();
 			type();
 		}
-		if ( lexer.token != Token.LEFTCURBRACKET ) {
+		
+		if (lexer.token != Token.LEFTCURBRACKET) {
 			error("'{' expected");
 		}
 		next();
+		
 		statementList();
-		if ( lexer.token != Token.RIGHTCURBRACKET ) {
-			error("'{' expected");
+		
+		if (lexer.token != Token.RIGHTCURBRACKET) {
+			error("'}' expected");
 		}
 		next();
 
+		return null; // delete later
 	}
 
 	private ArrayList<Statement> statementList() {
-		<ArrayList>Statement statemtList = new ArrayList<>();
+		ArrayList<Statement> statemtList = new ArrayList<>();
 		  // only '}' is necessary in this test
 		while ( lexer.token != Token.RIGHTCURBRACKET && lexer.token != Token.END ) {
 			statemtList.add(statement());
@@ -257,7 +263,7 @@ public class Compiler {
 	}
 
 	private Statement statement() {
-		Statement statemt;
+		Statement statemt = null;
 		boolean checkSemiColon = true;
 		
 		switch ( lexer.token ) {
@@ -265,7 +271,7 @@ public class Compiler {
 			statemt = ifStat();
 			checkSemiColon = false;
 			break;
-		casestatemt =  WHILE:
+		case WHILE:
 			statemt = whileStat();
 			checkSemiColon = false;
 			break;
@@ -322,7 +328,8 @@ public class Compiler {
 			// check if there is just one variable
 			expr();
 		}
-
+		
+		return null; // delete later
 	}
 
 	private RepeatStat repeatStat() {
@@ -331,15 +338,21 @@ public class Compiler {
 			statement();
 		}
 		check(Token.UNTIL, "missing keyword 'until'");
+		
+		return null; // delete later
 	}
 
 	private BreakStat breakStat() {
 		next();
+		
+		return null; // delete later
 	}
 
 	private ReturnStat returnStat() {
 		next();
 		Expr exp = expr();
+		
+		return null; // delete later
 	}
 
 	private WhileStat whileStat() {
@@ -351,6 +364,8 @@ public class Compiler {
 			statement();
 		}
 		check(Token.RIGHTCURBRACKET, "missing '}' after 'while' body");
+		
+		return null; // delete later
 	}
 
 	private IfStat ifStat() {
@@ -362,6 +377,8 @@ public class Compiler {
 			statement();
 		}
 		check(Token.RIGHTCURBRACKET, "'}' was expected");
+		next();
+		
 		if ( lexer.token == Token.ELSE ) {
 			next();
 			check(Token.LEFTCURBRACKET, "'{' expected after 'else'");
@@ -370,7 +387,10 @@ public class Compiler {
 				statement();
 			}
 			check(Token.RIGHTCURBRACKET, "'}' was expected");
+			next();
 		}
+		
+		return null; // delete later
 	}
 
 	/**
@@ -387,6 +407,8 @@ public class Compiler {
 		}
 		String printName = lexer.getStringValue();
 		Expr exp = expr();
+		
+		return null; // delete later
 	}
 
 	private Expr expr() {
@@ -406,23 +428,31 @@ public class Compiler {
 	}
 
 	private void fieldDec() {
-		lexer.nextToken();
+		next();
 		type();
-		if ( lexer.token != Token.ID ) {
+		
+		if (lexer.token == Token.ID) {
+			idList();
+		} else {
 			this.error("A field name was expected");
 		}
-		else {
-			while ( lexer.token == Token.ID  ) {
-				lexer.nextToken();
-				if ( lexer.token == Token.COMMA ) {
-					lexer.nextToken();
-				}
-				else {
-					break;
-				}
+		
+		if (lexer.token == Token.SEMICOLON) {
+			next();
+		}
+	}
+	
+	private void idList() {
+		while (lexer.token == Token.ID) {
+			next();
+			
+			if (lexer.token == Token.COMMA) {
+				next();
+			}
+			else {
+				break;
 			}
 		}
-
 	}
 
 	private Type type() {
@@ -533,6 +563,8 @@ public class Compiler {
 			next();
 			expr();
 		}
+		
+		return null; // delete later
 	}
 
 	private BasicValue basicValue() {
@@ -572,21 +604,21 @@ public class Compiler {
 		ArrayList<Expr> expressionList = new ArrayList<>();
 		Expr exp = expr();
 		
-		if(exp == null) {
-			error("Expression was expected");
-		}
-		expressionList.add(exp);
+//		if (exp == null) {
+//			error("Expression was expected");
+//		}
+//		expressionList.add(exp);
 		
 		while (lexer.token == Token.COMMA) {
 			next();
 			exp = expr();
-			if(exp == null) {
-				error("Expression was expected");
-			}
-			expressionList.add(exp);
+//			if(exp == null) {
+//				error("Expression was expected");
+//			}
+//			expressionList.add(exp);
 		}
 		
-		return exprList;
+		return expressionList;
 	}
 
 	private void formalParamDec() {
@@ -623,22 +655,36 @@ public class Compiler {
 	}
 
 	private SumSubExpr sumSubExpression() {
-		term();
+		ArrayList<Term> terms = new ArrayList<>();
+		ArrayList<String> operators = new ArrayList<>();
+		
+		Term term = term();
+		terms.add(term);
 		
 		while (lexer.token == Token.PLUS || lexer.token == Token.MINUS || lexer.token == Token.OR) {
-			lowOperator();
-			term();
+			String op = lowOperator();
+			operators.add(op);
+			Term anotherTerm = term();
+			terms.add(anotherTerm);
 		}
 		
-		return null; // delete later
+		return new SumSubExpr(terms, operators); // delete later
 	}
 
-	private void lowOperator() {
-		if (lexer.token == Token.PLUS || lexer.token == Token.MINUS || lexer.token == Token.OR) {
+	private String lowOperator() {
+		if (lexer.token == Token.PLUS) {
 			next();
-		} else {
-			error("'+' or '-' or '||' was expected");
+			return "+";
+		} else if (lexer.token == Token.MINUS) {
+			next();
+			return "-";
+		} else if (lexer.token == Token.OR) {
+			next();
+			return "||";
 		}
+		
+		error("'+' or '-' or '||' was expected");
+		return null;
 	}
 
 	private Term term() {
@@ -765,6 +811,8 @@ public class Compiler {
 			next();
 			readExpr();
 		}
+		
+		return null; // delete later
 	}
 
 
@@ -806,6 +854,8 @@ public class Compiler {
 		} else {
 			error("A 'readInt' or 'readString' method was expected");
 		}
+		
+		return null; // delete later
 	}
 	
 	private void objectCreation() {

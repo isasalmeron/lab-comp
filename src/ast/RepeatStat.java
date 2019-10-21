@@ -8,20 +8,37 @@ package ast;
 import java.util.ArrayList;
 
 public class RepeatStat extends Statement {
+	
+	private ArrayList<Statement> statementList;
+	private Expr expr;
     
-	public RepeatStat(ArrayList<Statement> statemtList, Expr expr) {
-		this.statemtList = statemtList;
+	public RepeatStat(ArrayList<Statement> statementList, Expr expr) {
+		this.statementList = statementList;
 		this.expr = expr;
+	}
+	
+	@Override
+	public void genJava(PW pw) {
+		pw.print("do {");
+		pw.add();
+		
+		int size = statementList.size();
+		for (int i = 0; i < size; i++) {
+			statementList.get(i).genJava(pw);
+		}
+		
+		pw.sub();
+		pw.print("} while (");
+		
+		expr.genJava(pw);
+		pw.print(");");
 	}
 
 	public ArrayList<Statement> getStatementList() {
-		return statemtList;
+		return this.statementList;
 	}
 
 	public Expr getExpr() {
-		return expr;
+		return this.expr;
 	}
-
-	private ArrayList<Statement> statemtList;
-	private Expr expr;
 }

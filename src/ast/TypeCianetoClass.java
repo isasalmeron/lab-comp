@@ -14,7 +14,7 @@ public class TypeCianetoClass extends Type {
    }
 
    @Override
-   public String getCname() {
+   public String getJavaName() {
       return getName();
    }
 
