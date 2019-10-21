@@ -338,6 +338,8 @@ public class Compiler {
 			statement();
 		}
 		check(Token.UNTIL, "missing keyword 'until'");
+		next();
+		expr();
 		
 		return null; // delete later
 	}
