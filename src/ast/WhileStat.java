@@ -5,14 +5,14 @@
 
 package ast;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class WhileStat extends Statement {
 	
 	private Expr expr;
-	private ArrayList<Statement> statementList;
+	private List<Statement> statementList;
     
-	public WhileStat(Expr expr, ArrayList<Statement> statementList) {
+	public WhileStat(Expr expr, List<Statement> statementList) {
 		this.expr = expr;
 		this.statementList = statementList;
 	}
@@ -37,7 +37,7 @@ public class WhileStat extends Statement {
 		return this.expr;
 	}
 
-	public ArrayList<Statement> getStatementList() {
+	public List<Statement> getStatementList() {
 		return this.statementList;
 	}
 }

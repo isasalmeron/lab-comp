@@ -1,12 +1,12 @@
 package ast;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class IdList {
 
-	private ArrayList<String> identifiers;
+	private List<String> identifiers;
 	
-	public IdList(final ArrayList<String> identifiers) {
+	public IdList(final List<String> identifiers) {
 		this.identifiers = identifiers;
 	}
 	

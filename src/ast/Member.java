@@ -5,6 +5,8 @@
 
 package ast;
 
-public class Member {
+public abstract class Member {
+	
+	abstract public void genJava(PW pw);
 
 }

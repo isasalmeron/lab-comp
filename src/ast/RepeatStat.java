@@ -5,14 +5,14 @@
 
 package ast;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class RepeatStat extends Statement {
 	
-	private ArrayList<Statement> statementList;
+	private List<Statement> statementList;
 	private Expr expr;
     
-	public RepeatStat(ArrayList<Statement> statementList, Expr expr) {
+	public RepeatStat(List<Statement> statementList, Expr expr) {
 		this.statementList = statementList;
 		this.expr = expr;
 	}
@@ -34,7 +34,7 @@ public class RepeatStat extends Statement {
 		pw.print(");");
 	}
 
-	public ArrayList<Statement> getStatementList() {
+	public List<Statement> getStatementList() {
 		return this.statementList;
 	}
 

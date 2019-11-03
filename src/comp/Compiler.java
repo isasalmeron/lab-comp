@@ -7,6 +7,7 @@ package comp;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 
 import ast.*;
 import lexer.Lexer;
@@ -185,19 +186,31 @@ public class Compiler {
 
 	}
 
-	private void memberList() {
-		while ( true ) {
-			qualifier();
+	private List<MemberList> memberList() {
+		List<MemberList> memberLists = new ArrayList<>();
+		MemberList memberList = null;
+		Qualifier qualifier = null;
+		Member member = null;
+		
+		while (true) {
+			qualifier = qualifier();
 			if ( lexer.token == Token.VAR ) {
-				fieldDec();
+				member = fieldDec();
+				memberList = new MemberList(qualifier, member);
+				memberLists.add(memberList);
+				
 			}
 			else if ( lexer.token == Token.FUNC ) {
-				methodDec();
+				member = methodDec();
+				memberList = new MemberList(qualifier, member);
+				memberLists.add(memberList);
 			}
 			else {
 				break;
 			}
 		}
+		
+		return memberLists;
 	}
 
 	private void error(String msg) {
@@ -222,10 +235,14 @@ public class Compiler {
 			error("An identifier or identifer: was expected after 'func'");
 		}
 		
+		String methodName = lexer.getStringValue();
+		List<ParamDec> formalParamDec = null;
+		Type returnType = null;
+		
 		if (lexer.token == Token.IDCOLON) {
 			// keyword method. It has parameters
 			lexer.nextToken();
-			formalParamDec();
+			formalParamDec = formalParamDec();
 		} else if (lexer.token == Token.ID) {
 			// unary method
 			lexer.nextToken();
@@ -234,7 +251,7 @@ public class Compiler {
 		if (lexer.token == Token.MINUS_GT) {
 			// method declared a return type
 			lexer.nextToken();
-			type();
+			returnType = type();
 		}
 		
 		if (lexer.token != Token.LEFTCURBRACKET) {
@@ -242,72 +259,76 @@ public class Compiler {
 		}
 		next();
 		
-		statementList();
+		List<Statement> stmtList = statementList();
 		
 		if (lexer.token != Token.RIGHTCURBRACKET) {
 			error("'}' expected");
 		}
 		next();
+		
+		if (formalParamDec != null) {
+			return new MethodDec(methodName, formalParamDec, stmtList, returnType);
+		}
 
 		return null; // delete later
 	}
 
-	private ArrayList<Statement> statementList() {
-		ArrayList<Statement> statemtList = new ArrayList<>();
-		  // only '}' is necessary in this test
-		while ( lexer.token != Token.RIGHTCURBRACKET && lexer.token != Token.END ) {
-			statemtList.add(statement());
+	private List<Statement> statementList() {
+		List<Statement> statementList = new ArrayList<>();
+		
+		while (lexer.token != Token.RIGHTCURBRACKET && lexer.token != Token.END) {
+			statementList.add(statement());
 		}
 		
-		return statemtList;
+		return statementList;
 	}
 
 	private Statement statement() {
-		Statement statemt = null;
+		Statement statement = null;
 		boolean checkSemiColon = true;
 		
-		switch ( lexer.token ) {
+		switch (lexer.token) {
 		case IF:
-			statemt = ifStat();
+			statement = ifStat();
 			checkSemiColon = false;
 			break;
 		case WHILE:
-			statemt = whileStat();
+			statement = whileStat();
 			checkSemiColon = false;
 			break;
 		case RETURN:
-			statemt = returnStat();
+			statement = returnStat();
 			break;
 		case BREAK:
-			statemt = breakStat();
+			statement = breakStat();
 			break;
 		case SEMICOLON:
 			next();
-			checkSemiColon = false; //essa linha faz sentido?
+			checkSemiColon = false;
 			break;
 		case REPEAT:
-			statemt = repeatStat();
+			statement = repeatStat();
 			break;
 		case VAR:
-			statemt = localDec();
+			statement = localDec();
 			break;
 		case ASSERT:
-			statemt = assertStat();
+			statement = assertStat();
 			break;
 		default:
-			if ( lexer.token == Token.ID && lexer.getStringValue().equals("Out") ) {
-				statemt = printStat();
+			if (lexer.token == Token.ID && lexer.getStringValue().equals("Out")) {
+				statement = printStat();
 			}
 			else {
-				AssignExpr assignEx = assignExpr();
+				statement = new AssignStat(assignExpr());
 			}
 
 		}
-		if ( checkSemiColon ) {
+		if (checkSemiColon) {
 			check(Token.SEMICOLON, "';' expected");
 		}
 		
-		return statemt;
+		return statement;
 	}
 
 	private LocalDec localDec() {
@@ -316,14 +337,14 @@ public class Compiler {
 		check(Token.ID, "A variable name was expected");
 		while ( lexer.token == Token.ID ) {
 			next();
-			if ( lexer.token == Token.COMMA ) {
+			if (lexer.token == Token.COMMA) {
 				next();
 			}
 			else {
 				break;
 			}
 		}
-		if ( lexer.token == Token.ASSIGN ) {
+		if (lexer.token == Token.ASSIGN) {
 			next();
 			// check if there is just one variable
 			expr();
@@ -332,67 +353,76 @@ public class Compiler {
 		return null; // delete later
 	}
 
-	private RepeatStat repeatStat() {
+	private RepeatStat repeatStat() {	
 		next();
-		while ( lexer.token != Token.UNTIL && lexer.token != Token.RIGHTCURBRACKET && lexer.token != Token.END ) {
-			statement();
-		}
-		check(Token.UNTIL, "missing keyword 'until'");
-		next();
-		expr();
 		
-		return null; // delete later
+		List<Statement> stmtList = statementList();
+		
+		check(Token.UNTIL, "missing keyword 'until'");
+		
+		next();
+		
+		Expr expr = expr();
+		
+		return new RepeatStat(stmtList, expr);
 	}
 
 	private BreakStat breakStat() {
 		next();
-		
-		return null; // delete later
+		return new BreakStat();
 	}
 
 	private ReturnStat returnStat() {
 		next();
-		Expr exp = expr();
-		
-		return null; // delete later
+		Expr expr = expr();
+		return new ReturnStat(expr);
 	}
 
 	private WhileStat whileStat() {
 		next();
-		Expr exp = expr();
+		
+		Expr expr = expr();
+		
 		check(Token.LEFTCURBRACKET, "missing '{' after the 'while' expression");
+		
 		next();
-		while ( lexer.token != Token.RIGHTCURBRACKET && lexer.token != Token.END ) {
-			statement();
-		}
+		
+		List<Statement> stmtList = statementList();
+		
 		check(Token.RIGHTCURBRACKET, "missing '}' after 'while' body");
 		
-		return null; // delete later
+		return new WhileStat(expr, stmtList);
 	}
 
 	private IfStat ifStat() {
-		next();
-		Expr exp = expr();
-		check(Token.LEFTCURBRACKET, "'{' expected after the 'if' expression");
-		next();
-		while ( lexer.token != Token.RIGHTCURBRACKET && lexer.token != Token.END && lexer.token != Token.ELSE ) {
-			statement();
-		}
-		check(Token.RIGHTCURBRACKET, "'}' was expected");
+		List<Statement> ifStatement = null, elseStatement = null;
+		
 		next();
 		
-		if ( lexer.token == Token.ELSE ) {
+		Expr expr = expr();
+		
+		check(Token.LEFTCURBRACKET, "'{' expected after the 'if' expression");
+		
+		next();
+		
+		ifStatement = statementList();
+		
+		check(Token.RIGHTCURBRACKET, "'}' was expected");
+		
+		next();
+		
+		if (lexer.token == Token.ELSE) {
 			next();
 			check(Token.LEFTCURBRACKET, "'{' expected after 'else'");
 			next();
-			while ( lexer.token != Token.RIGHTCURBRACKET ) {
-				statement();
-			}
+			
+			elseStatement = statementList();
+			
 			check(Token.RIGHTCURBRACKET, "'}' was expected");
 			next();
 		}
 		
-		return null; // delete later
+		return new IfStat(expr, ifStatement, elseStatement);
 	}
 
 	/**
@@ -414,7 +444,7 @@ public class Compiler {
 	}
 
 	private Expr expr() {
-		simpleExpression();
+		Expr expr = simpleExpression();
 		
 		if (lexer.token == Token.EQ
 				|| lexer.token == Token.LT
@@ -422,19 +452,21 @@ public class Compiler {
 				|| lexer.token == Token.LE
 				|| lexer.token == Token.GE
 				|| lexer.token == Token.NEQ) {
+			Token operator = lexer.token;
 			next();
-			simpleExpression();
+			expr = new CompositeExpr(expr, operator, simpleExpression());
 		}
 
-		return null; // delete later
+		return expr;
 	}
 
-	private void fieldDec() {
+	private FieldDec fieldDec() {
 		next();
-		type();
+		Type type = type();
+		IdList identifiers = null;
 		
 		if (lexer.token == Token.ID) {
-			idList();
+			identifiers = idList();
 		} else {
 			this.error("A field name was expected");
 		}
@@ -442,10 +474,15 @@ public class Compiler {
 		if (lexer.token == Token.SEMICOLON) {
 			next();
 		}
+		
+		return new FieldDec(type, identifiers);
 	}
 	
-	private void idList() {
+	private IdList idList() {
+		List<String> identifiers = new ArrayList<>();
+		
 		while (lexer.token == Token.ID) {
+			identifiers.add(lexer.getStringValue());
 			next();
 			
 			if (lexer.token == Token.COMMA) {
@@ -455,6 +492,8 @@ public class Compiler {
 				break;
 			}
 		}
+		
+		return new IdList(identifiers);
 	}
 
 	private Type type() {
@@ -468,9 +507,10 @@ public class Compiler {
 			next();
 			return Type.stringType;
 		}
-		else if ( lexer.token == Token.ID ) {
-			//fazer coisas aqui
+		else if (lexer.token == Token.ID) {
+			TypeCianetoClass typeCianetoClass = new TypeCianetoClass(lexer.getStringValue());
 			next();
+			return typeCianetoClass;
 		}
 		else {
 			this.error("A type was expected");
@@ -480,33 +520,46 @@ public class Compiler {
 	}
 
 	private Qualifier qualifier() {
-		if ( lexer.token == Token.PRIVATE ) {
+		if (lexer.token == Token.PRIVATE) {
 			next();
 			return new Qualifier(Token.PRIVATE);
 		}
-		else if ( lexer.token == Token.PUBLIC ) {
+		else if (lexer.token == Token.PUBLIC) {
 			next();
 			return new Qualifier(Token.PUBLIC);
 		}
-		else if ( lexer.token == Token.OVERRIDE ) {
+		else if (lexer.token == Token.OVERRIDE) {
 			next();
-			if ( lexer.token == Token.PUBLIC ) {
+			if (lexer.token == Token.PUBLIC) {
 				next();
 				return new Qualifier(Token.OVERRIDE, Token.PUBLIC);
+			} else {
+				return new Qualifier(Token.OVERRIDE);
 			}
 		}
-		else if ( lexer.token == Token.FINAL ) {
+		else if (lexer.token == Token.FINAL) {
 			next();
-			if ( lexer.token == Token.PUBLIC ) {
+			if (lexer.token == Token.PUBLIC) {
 				next();
 				return new Qualifier(Token.FINAL, Token.PUBLIC);
 			}
-			else if ( lexer.token == Token.OVERRIDE ) {
+			else if (lexer.token == Token.OVERRIDE) {
 				next();
-				if ( lexer.token == Token.PUBLIC ) {
+				if (lexer.token == Token.PUBLIC) {
 					next();
 					return new Qualifier(Token.FINAL, Token.OVERRIDE, Token.PUBLIC);
 				}
+			} else {
+				return new Qualifier(Token.FINAL);
+			}
+		} else if (lexer.token == Token.SHARED) {
+			next();
+			if (lexer.token == Token.PRIVATE) {
+				next();
+				return new Qualifier(Token.SHARED, Token.PRIVATE);
+			} else if (lexer.token == Token.PUBLIC) {
+				next();
+				return new Qualifier(Token.SHARED, Token.PUBLIC);
 			}
 		}
 		
@@ -517,24 +570,23 @@ public class Compiler {
 	 * uncomment it
 	 * implement the methods it calls
 	 */
-	public Statement assertStat() {
-
+	private Statement assertStat() {
 		lexer.nextToken();
 		int lineNumber = lexer.getLineNumber();
 		expr();
-		if ( lexer.token != Token.COMMA ) {
+		if (lexer.token != Token.COMMA) {
 			this.error("',' expected after the expression of the 'assert' statement");
 		}
 		lexer.nextToken();
-		if ( lexer.token != Token.LITERALSTRING ) {
+		if (lexer.token != Token.LITERALSTRING) {
 			this.error("A literal string expected after the ',' of the 'assert' statement");
 		}
 		String message = lexer.getLiteralStringValue();
 		lexer.nextToken();
-		if ( lexer.token == Token.SEMICOLON )
+		if (lexer.token == Token.SEMICOLON)
 			lexer.nextToken();
 
-		return null;
+		return null; // delete later
 	}
 
 	private LiteralInt literalInt() {
@@ -549,6 +601,12 @@ public class Compiler {
 		return new LiteralInt(value);
 	}
 	
+	private LiteralString literalString() {
+		String value = lexer.getStringValue();
+		lexer.nextToken();
+		return new LiteralString(value);
+	}
+	
 	private static boolean startExpr(Token token) {
 
 		return token == Token.FALSE || token == Token.TRUE
@@ -559,34 +617,34 @@ public class Compiler {
 
 	}
 
-	private AssignExpr assignExpr() {
-		expr();
-		if(lexer.token == Token.ASSIGN){
+	private Expr assignExpr() {
+		Expr left = expr();
+		Token operator = null;
+		Expr right = null;
+		
+		if (lexer.token == Token.ASSIGN) {
+			operator = lexer.token;
 			next();
-			expr();
+			right = expr();
 		}
 		
-		return null; // delete later
+		return new CompositeExpr(left, operator, right);
 	}
 
-	private BasicValue basicValue() {
+	private Expr basicValue() {
 		if (lexer.token == Token.LITERALINT) {
-			final Integer value = lexer.getNumberValue();
-			next();
-			return new BasicValue(value);
+			return literalInt();
 		} else if (lexer.token == Token.TRUE) {
 			next();
-			return new BasicValue(true);
+			return LiteralBoolean.True;
 		} else if (lexer.token == Token.FALSE) {
 			next();
-			return new BasicValue(false);
+			return LiteralBoolean.False;
 		} else if (lexer.token == Token.LITERALSTRING) {
-			final String value = lexer.getLiteralStringValue();
-			next();
-			return new BasicValue(value);
-		} else {
-			error("A basic value was expected");
+			return literalString();
 		}
+		
+		error("A basic value was expected");
 		
 		return null;
 	}
@@ -606,130 +664,142 @@ public class Compiler {
 		ArrayList<Expr> expressionList = new ArrayList<>();
 		Expr exp = expr();
 		
-//		if (exp == null) {
-//			error("Expression was expected");
-//		}
-//		expressionList.add(exp);
+		if (exp == null) {
+			error("Expression was expected");
+		}
+		expressionList.add(exp);
 		
 		while (lexer.token == Token.COMMA) {
 			next();
 			exp = expr();
-//			if(exp == null) {
-//				error("Expression was expected");
-//			}
-//			expressionList.add(exp);
+			if(exp == null) {
+				error("Expression was expected");
+			}
+			expressionList.add(exp);
 		}
 		
 		return expressionList;
 	}
 
-	private void formalParamDec() {
-		paramDec();
+	private List<ParamDec> formalParamDec() {
+		List<ParamDec> formalParamDec = new ArrayList<>();
+		formalParamDec.add(paramDec());
 		
 		while (lexer.token == Token.COMMA) {
 			next();
-			paramDec();
+			formalParamDec.add(paramDec());
 		}
+		
+		return formalParamDec;
 	}
 
-	private HighOperator highOperator() {
+	private Token highOperator() {
+		Token operator = null;
+		
 		if (lexer.token == Token.MULT || lexer.token == Token.DIV || lexer.token == Token.AND) {
+			operator = lexer.token;
 			next();
 		} else {
 			error("'*' or '/' or '&&' operator was expected");
 		}
 		
-		return null; // delete later
+		return operator;
 	}
 	
-	private SimpleExpr simpleExpression() {
-		sumSubExpression();
+	private Expr simpleExpression() {
+		Expr expr = sumSubExpression();
 		
-		while (lexer.token == Token.PLUS) {
+		while (lexer.token == Token.PLUSPLUS) {
 			next();
-			if (lexer.token == Token.PLUS) {
-				next();
-				sumSubExpression();
-			}
+			expr = new CompositeExpr(expr, Token.PLUSPLUS, sumSubExpression());
 		}
 		
-		return null; // delete later		
+		return expr;
 	}
 
-	private SumSubExpr sumSubExpression() {
-		ArrayList<Term> terms = new ArrayList<>();
-		ArrayList<String> operators = new ArrayList<>();
+	private Expr sumSubExpression() {
+		Token operator = null;
 		
-		Term term = term();
-		terms.add(term);
+		Expr expr = term();
 		
 		while (lexer.token == Token.PLUS || lexer.token == Token.MINUS || lexer.token == Token.OR) {
-			String op = lowOperator();
-			operators.add(op);
-			Term anotherTerm = term();
-			terms.add(anotherTerm);
+			operator = lowOperator();
+			expr = new CompositeExpr(expr, operator, term());
 		}
 		
-		return new SumSubExpr(terms, operators); // delete later
+		return expr;
 	}
 
-	private String lowOperator() {
+	private Token lowOperator() {
+		Token operator = null;
+		
 		if (lexer.token == Token.PLUS) {
+			operator = lexer.token;
 			next();
-			return "+";
 		} else if (lexer.token == Token.MINUS) {
+			operator = lexer.token;
 			next();
-			return "-";
 		} else if (lexer.token == Token.OR) {
+			operator = lexer.token;
 			next();
-			return "||";
+		} else {
+			error("'+' or '-' or '||' was expected");
 		}
 		
-		error("'+' or '-' or '||' was expected");
-		return null;
+		return operator;
 	}
 
-	private Term term() {
-		signalFactor();
+	private Expr term() {
+		Expr expr = signalFactor();
+		Token operator = null;
 		
 		while (lexer.token == Token.MULT || lexer.token == Token.DIV || lexer.token == Token.AND) {
-			highOperator();
-			signalFactor();
+			operator = highOperator();
+			expr = new CompositeExpr(expr, operator, signalFactor());
 		}
 		
-		return null; // delete later
+		return expr;
 	}
 
-	private SignalFactor signalFactor() {
+	private PrefixOperatorExpr signalFactor() {
+		Token signal = null;
+		Expr factor = null;
+		
 		if (lexer.token == Token.PLUS || lexer.token == Token.MINUS) {
-			signal();
+			signal = signal();
 		}
 		
-		factor();
+		factor = factor();
 		
-		return null; // delete later
+		return new PrefixOperatorExpr(signal, factor);
 	}
 	
-	private Factor factor() {
+	private Expr factor() {
+		Expr expr = null;
 		if (lexer.token == Token.LITERALINT
 				|| lexer.token == Token.TRUE
 				|| lexer.token == Token.FALSE
 				||lexer.token == Token.LITERALSTRING) {
-			basicValue();
+			return basicValue();
 		} else if (lexer.token == Token.LEFTPAR) {
 			next();
-			expr();
+			expr = expr();
 			
 			if (lexer.token == Token.RIGHTPAR) {
 				next();
 			} else {
 				error("'}' was expected");
 			}
+			
+			return new ParenthesisExpr(expr);
 		} else if (lexer.token == Token.NOT) {
+			Token operator = lexer.token;
 			next();
-			factor();
+			expr = factor();
+			return new PrefixOperatorExpr(operator, expr);
 		} else if (lexer.token == Token.NIL) {
 			next();
+			return new NilExpr();
 		} else if (lexer.token == Token.SUPER
 				|| lexer.token == Token.ID
 				|| lexer.token == Token.SELF
@@ -744,7 +814,9 @@ public class Compiler {
 		return null; // delete later
 	}
 
-	private PrimaryExpr primaryExpr() {
+	private Expr primaryExpr() {
+		String messageName = "";
+		
 		if (lexer.token == Token.SUPER) {
 			next();
 			
@@ -752,7 +824,9 @@ public class Compiler {
 				next();
 				
 				if (lexer.token == Token.ID) {
+					messageName = lexer.getStringValue();
 					next();
+					return new MessageSendUnaryExpr(messageName);
 				} else if (lexer.token == Token.IDCOLON) {
 					next();
 					exprList();
@@ -771,7 +845,9 @@ public class Compiler {
 				next();
 				
 				if (lexer.token == Token.ID) {
+					messageName = lexer.getStringValue();
 					next();
+					return new MessageSendUnaryExpr(messageName);
 				} else if (lexer.token == Token.IDCOLON) {
 					next();
 					exprList();
@@ -818,24 +894,30 @@ public class Compiler {
 	}
 
 
-	private Signal signal() {
+	private Token signal() {
+		Token signal = null;
+		
 		if (lexer.token == Token.PLUS || lexer.token == Token.MINUS) {
+			signal = lexer.token;
 			next();
 		} else {
 			error("'+' or '-' was expected");
 		}
 		
-		return null; // delete later	
+		return signal;
 	}
 	
-	private void paramDec() {
-		type();
+	private ParamDec paramDec() {
+		Type type = type();
 		
-		if (lexer.token == Token.ID) {
-			next();
-		} else {
+		if (lexer.token != Token.ID) {
 			error("A parameter name was expected");
 		}
+		
+		String paramName = lexer.getStringValue();
+		next();
+		
+		return new ParamDec(type, paramName);
 	}
 	
 	private ReadExpr readExpr() {

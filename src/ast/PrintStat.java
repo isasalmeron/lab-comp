@@ -7,9 +7,9 @@ package ast;
 
 public class PrintStat extends Statement {
 	
-	private SimpleExpr expr;
+	private Expr expr;
 
-	public PrintStat(SimpleExpr expr) {
+	public PrintStat(Expr expr) {
 		this.expr = expr;
 	}
 	

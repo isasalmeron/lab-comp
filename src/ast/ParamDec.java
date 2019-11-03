@@ -5,16 +5,15 @@
 
 package ast;
 
-public class FieldDec extends Member {
+public class ParamDec {
 	private Type type;
-	private IdList identifiers;
+	private String identifier;
 	
-	public FieldDec(final Type type, final IdList identifiers) {
+	public ParamDec(final Type type, final String identifier) {
 		this.type = type;
-		this.identifiers = identifiers;
+		this.identifier = identifier;
 	}
 
-	@Override
 	public void genJava(PW pw) {
 		// TODO Auto-generated method stub
 		

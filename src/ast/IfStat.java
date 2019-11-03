@@ -5,13 +5,15 @@
 
 package ast;
 
+import java.util.List;
+
 public class IfStat extends Statement {
 	
 	private Expr expr;
-	private Statement ifStatement;
-	private Statement elseStatement;
+	private List<Statement> ifStatement;
+	private List<Statement> elseStatement;
     
-	public IfStat(Expr expr, Statement ifStatement, Statement elseStatement) {
+	public IfStat(Expr expr, List<Statement> ifStatement, List<Statement> elseStatement) {
 		this.expr = expr;
 		this.ifStatement = ifStatement;
 		this.elseStatement = elseStatement;
@@ -23,14 +25,18 @@ public class IfStat extends Statement {
 		expr.genJava(pw);
 		pw.print("{");
 		pw.add();
-		ifStatement.genJava(pw);
+		for (Statement statement : ifStatement) {
+			statement.genJava(pw);
+		}
 		pw.sub();
 		pw.print("}");
 		
 		if (elseStatement != null) {
 			pw.print(" else {");
 			pw.add();
-			elseStatement.genJava(pw);
+			for (Statement statement : elseStatement) {
+				statement.genJava(pw);
+			}
 			pw.sub();
 			pw.print("}");
 		}
@@ -40,11 +46,11 @@ public class IfStat extends Statement {
 		return expr;
 	}
 
-	public Statement getIfStatement() {
+	public List<Statement> getIfStatement() {
 		return ifStatement;
 	}
 	
-	public Statement getElseStatement() {
+	public List<Statement> getElseStatement() {
 		return elseStatement;
 	}
 }

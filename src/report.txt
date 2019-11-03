@@ -3,7 +3,7 @@ Relatório do Compilador
 Resumo
 _________________________________________________________________________
 MI:  46            I: 8              PI: 21            Exc: 0
-Dev: 55/134/41%    LE: 26/134/19%    SSE: 16/49/32%    
+Dev: 53/134/39%    LE: 26/134/19%    SSE: 19/49/38%    
 
 MI = muito importante, I = importante, PI = pouco importante, Exc = exceções
 Dev = deveria ter sinalizado, LE = sinalizou linha errada, SSE = sinalizado sem erro
@@ -129,10 +129,6 @@ Testes 'pouco importantes' em que o compilador falhou
     missingClassProgram
         ER_SEM78.ci
 
-    booleanExprRepeatUntil
-        ER_SEM89.ci
-        ER_SEM88.ci
-
     arithmeticOperators
         OK_MATH.ci
 
@@ -173,11 +169,17 @@ Testes 'pouco importantes' em que o compilador falhou
     exprRightHandSideAssignment
         ER_SEM06.ci
 
+    repeatUntil
+        OK_SEM18.ci
+
     returnTypeInMethodRunOfClassProgram
         ER_SEM80.ci
 
     illegalTypeOrIdentifier
         ER_SEM45.ci
+
+    repeatUntilBreak
+        OK_SEM16.ci
 
     methodOverridingSameSignature
         OK_SEM08.ci
@@ -215,11 +217,12 @@ Testes 'pouco importantes' em que o compilador acertou
         ER_SEM48.ci
         ER_SEM49.ci
 
+    booleanExprRepeatUntil
+        ER_SEM89.ci
+        ER_SEM88.ci
+
     selfAsExpression
         OK_SEM09.ci
-
-    repeatUntil
-        OK_SEM18.ci
 
     illegalTypeOrIdentifier
         ER_SEM24.ci
@@ -232,15 +235,12 @@ Testes 'pouco importantes' em que o compilador acertou
     missingReturn
         ER_SEM01.ci
 
-    repeatUntilBreak
-        OK_SEM16.ci
-
 
 _________________________________________________________________________
 
-55 de um total de 134 erros que deveriam ser sinalizados não o foram (41%)
+53 de um total de 134 erros que deveriam ser sinalizados não o foram (39%)
 26 erros foram sinalizados na linha errada (19%)
-16 erros foram sinalizados em 49 arquivos sem erro (32%)
+19 erros foram sinalizados em 49 arquivos sem erro (38%)
 _________________________________________________________________________
 
 Erros que deveriam ser sinalizados mas não foram:
@@ -265,8 +265,6 @@ ER_SEM07.ci, 15, Message send to a non-object receiver (comp.Compiler.factor())
 
 ER_SEM70.ci, 14, Method 'm' is being redefined (comp.Compiler.methodDec())
 
-ER_SEM89.ci, 17, boolean expression expected in a repeat-until statement (comp.Compiler.repeatUntilStatement())
-
 ER_SEM78.ci, 16, Source code without a class 'Program' (comp.Compiler.program())
 
 ER_SEM34.ci, 24, Message send 'a.m()' returns a value that is not used (comp.Compiler.statement())
@@ -280,8 +278,6 @@ ER_SIN02.ci, 7, Missing identifier (comp.Compiler.localDec())
 ER_SEM08.ci, 13, type boolean does not support operation '+' (comp.Compiler.simpleExpr())
 
 ER_SEM18.ci, 10, Type 'k' was not found (comp.Compiler.localDec())
-
-ER_SEM88.ci, 17, boolean expression expected in a repeat-until statement (comp.Compiler.repeatUntilStatement())
 
 ER_SEM28.ci, 16, Variable 'i' is being redeclared (comp.Compiler.localDec())
 
@@ -465,6 +461,10 @@ ER_SIN20.ci
 ######################################################
 Erros que foram sinalizados mas não deveriam ter sido:
 
+OK_SIN16.ci, 23, ';' expected
+
+OK_SEM18.ci, 24, ';' expected
+
 OK_SIN02.ci, 33, 'end' expected
 
 OK_SEM14.ci, 16, 'class' expected
@@ -488,6 +488,8 @@ OK_MATH.ci, 55, 'In' was expected
 OK_SEM15.ci, 15, 'class' expected
 
 OK_SEM12.ci, 10, 'class' expected
+
+OK_SEM16.ci, 12, ';' expected
 
 OK_SEM07.ci, 19, 'end' expected
 
@@ -547,6 +549,11 @@ The compiler message was: "'_' cannot start an indentifier"
 The 'cep' message is:      "Identifier starting with underscore"
 
 
+ER_SEM89.ci
+The compiler message was: "';' expected"
+The 'cep' message is:      "boolean expression expected in a repeat-until statement"
+
+
 ER_SIN42.ci
 The compiler message was: "Invalid Character: ':'"
 The 'cep' message is:      ""
@@ -590,6 +597,11 @@ The 'cep' message is:      "')' unexpected"
 ER_SEM01.ci
 The compiler message was: "'end' expected"
 The 'cep' message is:      "Missing 'return' statement in method 'm'"
+
+
+ER_SEM88.ci
+The compiler message was: "';' expected"
+The 'cep' message is:      "boolean expression expected in a repeat-until statement"
 
 
 ER_LEX04.ci
@@ -653,7 +665,7 @@ The 'cep' message is:      "Identifier expected"
 
 
 ER_SIN61.ci
-The compiler message was: "'}' was expected"
+The compiler message was: "';' expected"
 The 'cep' message is:      "')' expected"
 
 
