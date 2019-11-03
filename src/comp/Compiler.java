@@ -38,20 +38,20 @@ public class Compiler {
 		ArrayList<TypeCianetoClass> CianetoClassList = new ArrayList<>();;
 		Program program = new Program(CianetoClassList, metaobjectCallList, compilationErrorList);
 		boolean thereWasAnError = false;
-		while ( lexer.token == Token.CLASS ||
-				(lexer.token == Token.ID && lexer.getStringValue().equals("open") ) ||
-				lexer.token == Token.ANNOT ) {
+		while (lexer.token == Token.CLASS ||
+				(lexer.token == Token.ID && lexer.getStringValue().equals("open")) ||
+				lexer.token == Token.ANNOT) {
 			try {
-				while ( lexer.token == Token.ANNOT ) {
+				while (lexer.token == Token.ANNOT) {
 					metaobjectAnnotation(metaobjectCallList);
 				}
 				classDec();
 			}
-			catch( CompilerError e) {
+			catch(CompilerError e) {
 				// if there was an exception, there is a compilation error
 				thereWasAnError = true;
 			}
-			catch ( RuntimeException e ) {
+			catch (RuntimeException e) {
 				e.printStackTrace();
 				thereWasAnError = true;
 			}
@@ -154,11 +154,11 @@ public class Compiler {
 	private ClassDec classDec() {
 		String superclassName = "";
 		
-		if ( lexer.token == Token.ID && lexer.getStringValue().equals("open") ) {
+		if (lexer.token == Token.ID && lexer.getStringValue().equals("open")) {
 			lexer.nextToken();
 		}
 		
-		if ( lexer.token != Token.CLASS )
+		if (lexer.token != Token.CLASS)
 			error("'class' expected");
 		lexer.nextToken();
 		
@@ -276,7 +276,7 @@ public class Compiler {
 	private List<Statement> statementList() {
 		List<Statement> statementList = new ArrayList<>();
 		
-		while (lexer.token != Token.RIGHTCURBRACKET && lexer.token != Token.END) {
+		while (lexer.token != Token.RIGHTCURBRACKET && lexer.token != Token.END && lexer.token != Token.UNTIL) {
 			statementList.add(statement());
 		}
 		
@@ -308,6 +308,7 @@ public class Compiler {
 			break;
 		case REPEAT:
 			statement = repeatStat();
+			checkSemiColon = false;
 			break;
 		case VAR:
 			statement = localDec();
@@ -391,6 +392,8 @@ public class Compiler {
 		
 		check(Token.RIGHTCURBRACKET, "missing '}' after 'while' body");
 		
+		next();
+		
 		return new WhileStat(expr, stmtList);
 	}
 
@@ -430,14 +433,17 @@ public class Compiler {
 	 */
 	private PrintStat printStat() {
 		next();
+		
 		check(Token.DOT, "a '.' was expected after 'Out'");
+		
 		next();
-		if (lexer.token == Token.PRINT || lexer.token == Token.PRINTLN) {
-			next();
-		} else {
-			error("'print' or 'println' was expected after 'Out.'");
-		}
+
+		check(Token.IDCOLON, "'print:' or 'println:' was expected after 'Out.'");
+		
+		next();
+		
 		String printName = lexer.getStringValue();
+		
 		Expr exp = expr();
 		
 		return null; // delete later
@@ -583,8 +589,6 @@ public class Compiler {
 		}
 		String message = lexer.getLiteralStringValue();
 		lexer.nextToken();
-		if (lexer.token == Token.SEMICOLON)
-			lexer.nextToken();
 
 		return null; // delete later
 	}
@@ -886,7 +890,6 @@ public class Compiler {
 		}
 		
 		if (lexer.token == Token.IN) {
-			next();
 			readExpr();
 		}
 		

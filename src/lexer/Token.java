@@ -46,7 +46,6 @@ public enum Token {
     NEW("new"),
     NIL("nil"),
     NOT("!"),
-    OPEN("open"),
     OR("||"),
     OVERRIDE("override"),
     PLUS("+"),
@@ -68,9 +67,7 @@ public enum Token {
     UNTIL("until"),
     VAR("var"),
     VOID("void"),
-    WHILE("while"),
-    PRINT("print"),
-    PRINTLN("println");
+    WHILE("while");
 
 	Token(String name) {
 		this.name = name;
