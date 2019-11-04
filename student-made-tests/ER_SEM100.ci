@@ -16,7 +16,7 @@ class Teste
 end
 
 @annot("check", "identifierNotFound")
-@cep(7, "variable 'error' not found", "Identifer 'error' was not found")
+@cep(7, "variable 'error' not found", "Identifier 'error' was not found")
 class Program
     func run {
         var Teste t;
