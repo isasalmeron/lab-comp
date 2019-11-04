@@ -117,8 +117,10 @@ public class Compiler {
 				error("Annotation 'nce' does not take parameters");
 			break;
 		case "cep":
-			if ( metaobjectParamList.size() != 3 && metaobjectParamList.size() != 4 )
-				error("Annotation 'cep' takes three or four parameters");
+			int sizeParamList = metaobjectParamList.size();
+			if ( sizeParamList < 2 || sizeParamList > 4)
+				error("Annotation 'cep' takes two, three, or four parameters");
+
 			if ( !( metaobjectParamList.get(0) instanceof Integer)  ) {
 				error("The first parameter of annotation 'cep' should be an integer number");
 			}
@@ -126,9 +128,11 @@ public class Compiler {
 				int ln = (Integer ) metaobjectParamList.get(0);
 				metaobjectParamList.set(0, ln + lineNumber);
 			}
-			if ( !( metaobjectParamList.get(1) instanceof String) ||  !( metaobjectParamList.get(2) instanceof String) )
-				error("The second and third parameters of annotation 'cep' should be literal strings");
-			if ( metaobjectParamList.size() >= 4 && !( metaobjectParamList.get(3) instanceof String) )
+			if ( !( metaobjectParamList.get(1) instanceof String))
+				error("The second parameter of annotation 'cep' should be a literal string");
+			if ( sizeParamList >= 3 && !( metaobjectParamList.get(2) instanceof String))
+				error("The third parameter of annotation 'cep' should be a literal string");
+			if ( sizeParamList >= 4 && !( metaobjectParamList.get(3) instanceof String))
 				error("The fourth parameter of annotation 'cep' should be a literal string");
 			break;
 		case "annot":
