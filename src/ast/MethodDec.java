@@ -20,6 +20,12 @@ public class MethodDec extends Member {
     	this.stmtList = stmtList;
     	this.returnType = returnType;
     }
+    
+    public MethodDec(final String identifier, List<Statement> stmtList, Type returnType) {
+    	this.identifier = identifier;
+    	this.stmtList = stmtList;
+    	this.returnType = returnType;
+    }
 
 	@Override
 	public void genJava(PW pw) {

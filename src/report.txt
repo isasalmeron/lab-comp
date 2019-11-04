@@ -3,7 +3,7 @@ Relatório do Compilador
 Resumo
 _________________________________________________________________________
 MI:  0             I: 0              PI: 0             Exc: 0
-Dev: 10/58/17%     LE: 4/58/6%       SSE: 0/32/0%      
+Dev: 10/60/16%     LE: 4/60/6%       SSE: 0/30/0%      
 
 MI = muito importante, I = importante, PI = pouco importante, Exc = exceções
 Dev = deveria ter sinalizado, LE = sinalizou linha errada, SSE = sinalizado sem erro
@@ -29,9 +29,9 @@ Testes 'pouco importantes' em que o compilador acertou
 
 _________________________________________________________________________
 
-10 de um total de 58 erros que deveriam ser sinalizados não o foram (17%)
+10 de um total de 60 erros que deveriam ser sinalizados não o foram (16%)
 4 erros foram sinalizados na linha errada (6%)
-0 erros foram sinalizados em 32 arquivos sem erro (0%)
+0 erros foram sinalizados em 30 arquivos sem erro (0%)
 _________________________________________________________________________
 
 Erros que deveriam ser sinalizados mas não foram:

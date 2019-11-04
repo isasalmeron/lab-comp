@@ -5,11 +5,16 @@
 
 package ast;
 
-import java.util.ArrayList;
+import lexer.Token;
 
 public class ReadExpr extends PrimaryExpr {
+	Token readType;
     
-	public ReadExpr() {
+	public ReadExpr(final Token readType) {
+		this.readType = readType;
+	}
+	
+	public void genJava(PW pw) {
 		
 	}
 }

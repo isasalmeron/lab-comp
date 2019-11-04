@@ -273,8 +273,8 @@ public class Compiler {
 		if (formalParamDec != null) {
 			return new MethodDec(methodName, formalParamDec, stmtList, returnType);
 		}
-
-		return null; // delete later
+		
+		return new MethodDec(methodName, stmtList, returnType);
 	}
 
 	private List<Statement> statementList() {
@@ -337,25 +337,23 @@ public class Compiler {
 	}
 
 	private LocalDec localDec() {
+		Expr expr = null;
+		
 		next();
-		type();
+		
+		Type type = type();
+		
 		check(Token.ID, "A variable name was expected");
-		while ( lexer.token == Token.ID ) {
-			next();
-			if (lexer.token == Token.COMMA) {
-				next();
-			}
-			else {
-				break;
-			}
-		}
+		
+		IdList idList = idList();
+		
 		if (lexer.token == Token.ASSIGN) {
 			next();
 			// check if there is just one variable
-			expr();
+			expr = expr();
 		}
 		
-		return null; // delete later
+		return new LocalDec(type, idList, expr);
 	}
 
 	private RepeatStat repeatStat() {	
@@ -441,16 +439,25 @@ public class Compiler {
 		check(Token.DOT, "a '.' was expected after 'Out'");
 		
 		next();
-
-		check(Token.IDCOLON, "'print:' or 'println:' was expected after 'Out.'");
+		
+		if (lexer.token != Token.ID && lexer.token != Token.IDCOLON) {
+			error("'print:' or 'println:' was expected after 'Out.'");
+		}
+		
+		Token printType = lexer.token;
 		
 		next();
 		
-		String printName = lexer.getStringValue();
+		List<Expr> exprList = new ArrayList<>();
 		
-		Expr exp = expr();
+		exprList.add(expr());
 		
-		return null; // delete later
+		while (lexer.token == Token.COMMA) {
+			next();
+			exprList.add(expr());
+		}
+		
+		return new PrintStat(printType, exprList);
 	}
 
 	private Expr expr() {
@@ -582,8 +589,7 @@ public class Compiler {
 	 */
 	private Statement assertStat() {
 		lexer.nextToken();
-		int lineNumber = lexer.getLineNumber();
-		expr();
+		Expr expr = expr();
 		if (lexer.token != Token.COMMA) {
 			this.error("',' expected after the expression of the 'assert' statement");
 		}
@@ -594,7 +600,7 @@ public class Compiler {
 		String message = lexer.getLiteralStringValue();
 		lexer.nextToken();
 
-		return null; // delete later
+		return new AssertStat(expr, message);
 	}
 
 	private LiteralInt literalInt() {
@@ -668,8 +674,8 @@ public class Compiler {
 		check(Token.RIGHTCURBRACKET, "'}' was expected");
 	}
 
-	private ArrayList<Expr> exprList() {
-		ArrayList<Expr> expressionList = new ArrayList<>();
+	private List<Expr> exprList() {
+		List<Expr> expressionList = new ArrayList<>();
 		Expr exp = expr();
 		
 		if (exp == null) {
@@ -812,18 +818,16 @@ public class Compiler {
 				|| lexer.token == Token.ID
 				|| lexer.token == Token.SELF
 				|| lexer.token == Token.IN) {
-			primaryExpr();
-			
-			if (lexer.token == Token.NEW) {
-				next();
-			}
+			return primaryExpr();
 		}
 		
-		return null; // delete later
+		return null;
 	}
 
 	private Expr primaryExpr() {
 		String messageName = "";
+		String receiverName = "";
+		List<Expr> argList = new ArrayList<>();
 		
 		if (lexer.token == Token.SUPER) {
 			next();
@@ -837,7 +841,8 @@ public class Compiler {
 					return new MessageSendUnaryExpr(messageName);
 				} else if (lexer.token == Token.IDCOLON) {
 					next();
-					exprList();
+					argList = exprList();
+					return new MessageSendKeywordExpr(messageName, argList);
 				} else {
 					error("An identifier was expected");
 				}
@@ -847,6 +852,7 @@ public class Compiler {
 		}
 		
 		if (lexer.token == Token.ID) {
+			receiverName = lexer.getStringValue();
 			next();
 			
 			if (lexer.token == Token.DOT) {
@@ -858,7 +864,13 @@ public class Compiler {
 					return new MessageSendUnaryExpr(messageName);
 				} else if (lexer.token == Token.IDCOLON) {
 					next();
-					exprList();
+					argList = exprList();
+					return new MessageSendKeywordExpr(messageName, argList);
+				} else if (lexer.token == Token.NEW) {
+					next();
+					return new NewObjectExpr(receiverName);
+				} else {
+					error("ident, ident: or 'new' keyword was expected");
 				}
 			}
 		}
@@ -877,16 +889,19 @@ public class Compiler {
 						
 						if (lexer.token == Token.ID) {
 							next();
+							//return new MessageSendUnaryToFieldExpr();
 						} else if (lexer.token == Token.IDCOLON) {
 							next();
-							exprList();
+							argList = exprList();
+							//return new MessageSendKeywordToFieldExpr();
 						} else {
 							error("An identifier was expected");
 						}
 					}
 				} else if (lexer.token == Token.IDCOLON) {
 					next();
-					exprList();
+					argList = exprList();
+					return new MessageSendKeywordExpr(messageName, argList);
 				} else {
 					error("An identifier was expected");
 				}
@@ -894,7 +909,7 @@ public class Compiler {
 		}
 		
 		if (lexer.token == Token.IN) {
-			readExpr();
+			return readExpr();
 		}
 		
 		return null; // delete later
@@ -928,6 +943,8 @@ public class Compiler {
 	}
 	
 	private ReadExpr readExpr() {
+		Token readType = null;
+		
 		if (lexer.token == Token.IN) {
 			next();
 		} else {
@@ -941,32 +958,13 @@ public class Compiler {
 		}
 		
 		if (lexer.token == Token.READINT || lexer.token == Token.READSTRING) {
+			readType = lexer.token;
 			next();
 		} else {
 			error("A 'readInt' or 'readString' method was expected");
 		}
 		
-		return null; // delete later
-	}
-	
-	private void objectCreation() {
-		if (lexer.token == Token.ID) {
-			next();
-		} else {
-			error("A class name was expected");
-		}
-		
-		if (lexer.token == Token.DOT) {
-			next();
-		} else {
-			error("'.' was expected");
-		}
-		
-		if (lexer.token == Token.NEW) {
-			next();
-		} else {
-			error("'new' keyword was expected");
-		}
+		return new ReadExpr(readType);
 	}	
 
 	private SymbolTable		symbolTable;

@@ -5,16 +5,18 @@
 
 package ast;
 
-public class NewObjectExpr extends Expr {
-	String aClass;
+public class AssertStat extends Statement {
 	
-	public NewObjectExpr(final String aClass) {
-		this.aClass = aClass;
+	private Expr expr;
+	private String value;
+	
+	public AssertStat(final Expr expr, final String value) {
+		this.expr = expr;
+		this.value = value;
 	}
 
 	@Override
 	public void genJava(PW pw) {
 		// TODO Auto-generated method stub
-		
 	}
 }

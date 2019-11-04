@@ -5,22 +5,33 @@
 
 package ast;
 
+import java.util.List;
+
+import lexer.Token;
+
 public class PrintStat extends Statement {
 	
-	private Expr expr;
+	private Token printType;
+	private List<Expr> exprList;
 
-	public PrintStat(Expr expr) {
-		this.expr = expr;
+	public PrintStat(final Token printType, final List<Expr> exprList) {
+		this.printType = printType;
+		this.exprList = exprList;
 	}
 	
 	@Override
 	public void genJava(PW pw) {
-		pw.print("System.out.println(");
-		expr.genJava(pw);
+		
+		if (printType == Token.ID) {
+			pw.print("System.out.print(");
+		} else {
+			pw.print("System.out.println(");
+		}
+		
+		for (Expr expr : exprList) {
+			expr.genJava(pw);
+		}
+		
 		pw.print(");");
-	}
-
-	public Expr getExpr() {
-		return this.expr;
 	}
 }
