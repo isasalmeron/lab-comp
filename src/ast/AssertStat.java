@@ -17,6 +17,12 @@ public class AssertStat extends Statement {
 
 	@Override
 	public void genJava(PW pw) {
-		// TODO Auto-generated method stub
+		pw.print('if (');
+		expr.genJava(pw);
+		pw.print(') {');
+		pw.add();
+		pw.print('System.out.print(' + value + ');');
+		pw.sub();
+		pw.print('}');
 	}
 }

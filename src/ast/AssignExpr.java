@@ -22,12 +22,4 @@ public class AssignExpr extends Expr {
 		rightExpr.genJava(pw);
 		pw.print(";");
 	}
-	
-	public Expr getLeftExpr() {
-		return leftExpr;
-	}
-	
-	public Expr getRightExpr() {
-		return rightExpr;
-	}
 }
