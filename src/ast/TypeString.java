@@ -14,5 +14,4 @@ public class TypeString extends Type {
    public String getJavaName() {
       return "String";
    }
-
 }

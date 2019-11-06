@@ -33,12 +33,4 @@ public class RepeatStat extends Statement {
 		expr.genJava(pw);
 		pw.print(");");
 	}
-
-	public List<Statement> getStatementList() {
-		return this.statementList;
-	}
-
-	public Expr getExpr() {
-		return this.expr;
-	}
 }

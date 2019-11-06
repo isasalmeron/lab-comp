@@ -17,9 +17,9 @@ public class AssertStat extends Statement {
 
 	@Override
 	public void genJava(PW pw) {
-		pw.print('if (');
+		pw.print('if (!(');
 		expr.genJava(pw);
-		pw.print(') {');
+		pw.print(')) {');
 		pw.add();
 		pw.print('System.out.print(' + value + ');');
 		pw.sub();

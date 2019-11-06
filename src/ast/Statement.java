@@ -8,5 +8,4 @@ package ast;
 abstract public class Statement {
 
 	abstract public void genJava(PW pw);
-
 }

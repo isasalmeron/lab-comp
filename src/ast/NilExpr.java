@@ -14,6 +14,5 @@ public class NilExpr extends Expr {
 	@Override
 	public void genJava(PW pw) {
 		pw.print("null");
-		
 	}
 }

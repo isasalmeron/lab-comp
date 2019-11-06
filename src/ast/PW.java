@@ -7,7 +7,6 @@ package ast;
 
 import java.io.PrintWriter;
 
-
 public class PW {
 
 	public PW( PrintWriter out ) {
@@ -51,12 +50,9 @@ public class PW {
 		out.println("");
 	}
 
-
 	int currentIndent = 0;
 	public int step = 3;
 	private PrintWriter out;
 
-
 	static final private String space = "                                                                                                        ";
-
 }

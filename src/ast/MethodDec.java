@@ -8,6 +8,7 @@ package ast;
 import java.util.List;
 
 public class MethodDec extends Member {
+	
 	private String identifier;
 	private List<ParamDec> formalParamDec;
 	private List<Statement> stmtList;

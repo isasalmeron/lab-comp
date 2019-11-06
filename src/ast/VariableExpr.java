@@ -1,6 +1,7 @@
 package ast;
 
 public class VariableExpr extends Expr {
+	
 	VariableDec variable;
 
 	@Override

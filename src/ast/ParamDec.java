@@ -6,6 +6,7 @@
 package ast;
 
 public class ParamDec {
+	
 	private Type type;
 	private String identifier;
 	

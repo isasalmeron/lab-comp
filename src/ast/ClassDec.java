@@ -18,8 +18,4 @@ public class ClassDec {
 	public String getName() {
 		return this.name;
 	}
-	
-	public String getSuperclass() {
-		return this.superclass;
-	}
 }

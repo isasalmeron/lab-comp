@@ -41,16 +41,4 @@ public class IfStat extends Statement {
 			pw.print("}");
 		}
 	}
-	
-	public Expr getExpr() {
-		return expr;
-	}
-
-	public List<Statement> getIfStatement() {
-		return ifStatement;
-	}
-	
-	public List<Statement> getElseStatement() {
-		return elseStatement;
-	}
 }

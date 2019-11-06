@@ -7,6 +7,7 @@
 package ast;
 
 public class MemberList {
+	
 	private Qualifier qualifier;
 	private Member member;
 	

@@ -21,7 +21,6 @@ public class PrintStat extends Statement {
 	
 	@Override
 	public void genJava(PW pw) {
-		
 		if (printType == Token.ID) {
 			pw.print("System.out.print(");
 		} else {

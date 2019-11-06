@@ -1,6 +1,7 @@
 package ast;
 
 public class SelfExpr extends Expr {
+	
 	TypeCianetoClass currentClass;
 	
 	@Override

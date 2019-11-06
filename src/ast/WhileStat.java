@@ -32,12 +32,4 @@ public class WhileStat extends Statement {
 		pw.sub();
 		pw.print("}");
 	}
-	
-	public Expr getExpr() {
-		return this.expr;
-	}
-
-	public List<Statement> getStatementList() {
-		return this.statementList;
-	}
 }

@@ -21,16 +21,4 @@ public class LocalDec extends Statement {
 	public void genJava(PW pw) {
 		type.getJavaName();		
 	}
-    
-	public Type getType() {
-		return this.type;
-	}
-	
-	public IdList getIdList() {
-		return this.idList;
-	}
-
-	public Expr getExpr() {
-		return this.expr;
-	}
 }

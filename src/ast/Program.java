@@ -17,23 +17,17 @@ public class Program {
 		this.compilationErrorList = compilationErrorList;
 	}
 
-
 	public void genJava(PW pw) {
-	}
-
-	public void genC(PW pw) {
 	}
 	
 	public ArrayList<TypeCianetoClass> getClassList() {
 		return classList;
 	}
 
-
 	public ArrayList<MetaobjectAnnotation> getMetaobjectCallList() {
 		return metaobjectCallList;
 	}
 	
-
 	public boolean hasCompilationErrors() {
 		return compilationErrorList != null && compilationErrorList.size() > 0 ;
 	}
@@ -46,7 +40,6 @@ public class Program {
 		this.mainJavaClassName = mainJavaClassName;
 	}
 
-	
 	private ArrayList<TypeCianetoClass> classList;
 	private ArrayList<MetaobjectAnnotation> metaobjectCallList;
 	private String mainJavaClassName;

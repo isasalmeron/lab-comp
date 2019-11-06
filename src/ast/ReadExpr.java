@@ -8,6 +8,7 @@ package ast;
 import lexer.Token;
 
 public class ReadExpr extends PrimaryExpr {
+	
 	Token readType;
     
 	public ReadExpr(final Token readType) {

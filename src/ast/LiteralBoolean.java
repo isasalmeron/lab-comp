@@ -20,8 +20,4 @@ public class LiteralBoolean extends Expr {
 	public void genJava(PW pw) {
        pw.print( value ? "true" : "false" );
     }
-
-	public Type getType() {
-        return Type.booleanType;
-    }
 }

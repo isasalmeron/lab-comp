@@ -6,6 +6,7 @@
 package ast;
 
 public class NewObjectExpr extends Expr {
+	
 	String aClass;
 	
 	public NewObjectExpr(final String aClass) {

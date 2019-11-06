@@ -19,8 +19,4 @@ public class ReturnStat extends Statement {
 		expr.genJava(pw);
 		pw.print(";");
 	}
-
-	public Expr getExpr() {
-		return this.expr;
-	}
 }
