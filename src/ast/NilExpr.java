@@ -7,9 +7,7 @@ package ast;
 
 public class NilExpr extends Expr {
 	
-	public NilExpr() {
-		
-	}
+	public NilExpr() {}
 
 	@Override
 	public void genJava(PW pw) {

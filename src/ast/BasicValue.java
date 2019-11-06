@@ -5,7 +5,7 @@
 
 package ast;
 
-public class BasicValue extends Factor {
+public class BasicValue extends Expr {
 
 	private Integer intValue;
 	private Boolean booleanValue;

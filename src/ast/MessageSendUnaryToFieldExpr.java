@@ -9,7 +9,6 @@ public class MessageSendUnaryToFieldExpr extends Expr {
 
 	@Override
 	public void genJava(PW pw) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub	
 	}
 }

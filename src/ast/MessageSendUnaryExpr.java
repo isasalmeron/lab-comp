@@ -12,4 +12,9 @@ public class MessageSendUnaryExpr extends MessageSendExpr {
 	public MessageSendUnaryExpr(final String messageName) {
 		this.messageName = messageName;
 	}
+	
+	@Override
+	public void genJava(PW pw) {
+		// TODO Auto-generated method stub
+	}
 }

@@ -15,4 +15,9 @@ public class MemberList {
 		this.qualifier = qualifier;
 		this.member = member;
 	}
+	
+    @Override
+	public void genJava(PW pw) {
+		// TODO		
+	}
 }

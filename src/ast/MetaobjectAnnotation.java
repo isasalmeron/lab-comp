@@ -34,5 +34,4 @@ public class MetaobjectAnnotation {
 
 	private String name;
 	private ArrayList<Object> paramList;
-
 }

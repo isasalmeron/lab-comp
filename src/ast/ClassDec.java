@@ -18,4 +18,9 @@ public class ClassDec {
 	public String getName() {
 		return this.name;
 	}
+	
+	@Override
+	public void genJava(PW pw) {
+		// TODO 
+	}
 }

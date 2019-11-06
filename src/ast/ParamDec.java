@@ -17,6 +17,5 @@ public class ParamDec {
 
 	public void genJava(PW pw) {
 		// TODO Auto-generated method stub
-		
 	}
 }

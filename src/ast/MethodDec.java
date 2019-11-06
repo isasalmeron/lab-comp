@@ -30,6 +30,6 @@ public class MethodDec extends Member {
 
 	@Override
 	public void genJava(PW pw) {
-		
+		// TODO
 	}
 }
