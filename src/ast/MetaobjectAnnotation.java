@@ -32,7 +32,6 @@ public class MetaobjectAnnotation {
 		return name;
 	}
 
-
 	private String name;
 	private ArrayList<Object> paramList;
 

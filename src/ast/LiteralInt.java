@@ -21,8 +21,4 @@ public class LiteralInt extends Expr {
     public void genJava(PW pw) {
         pw.printIdent("" + value);
     }
-    
-    public Type getType() {
-        return Type.intType;
-    }
 }

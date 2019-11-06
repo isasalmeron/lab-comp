@@ -8,6 +8,7 @@ package ast;
 import lexer.Token;
 
 public class CompositeExpr extends Expr {
+	
 	Expr left, right;
 	Token operator;
 	
