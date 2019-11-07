@@ -16,7 +16,6 @@ public class MemberList {
 		this.member = member;
 	}
 	
-    @Override
 	public void genJava(PW pw) {
 		// TODO		
 	}

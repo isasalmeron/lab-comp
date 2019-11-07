@@ -17,10 +17,10 @@ public class AssertStat extends Statement {
 
 	@Override
 	public void genJava(PW pw) {
-		pw.print('assert ');
+		pw.print("assert ");
 		expr.genJava(pw);
-		pw.print(' : ');
+		pw.print(" : ");
 		pw.print(value);
-		pw.print(';');
+		pw.print(";");
 	}
 }

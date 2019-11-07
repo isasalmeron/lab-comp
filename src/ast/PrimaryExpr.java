@@ -12,4 +12,9 @@ public class PrimaryExpr extends Expr {
 	public PrimaryExpr() {
 		
 	}
+	
+	@Override
+	public void genJava(PW pw) {
+		// TODO
+	}
 }
