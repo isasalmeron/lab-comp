@@ -5,14 +5,18 @@
 
 package ast;
 
+import java.util.List;
+
 public class ClassDec {
 	
 	private String name;
 	private String superclass;
+	private List<MemberList> memberList;
 
-	public ClassDec(final String name, String superclass) {
+	public ClassDec(final String name, String superclass, List<MemberList> memberList) {
 		this.name = name;
 		this.superclass = superclass;
+		this.memberList = memberList;
 	}
 	
 	public String getName() {
@@ -20,6 +24,17 @@ public class ClassDec {
 	}
 	
 	public void genJava(PW pw) {
-		// TODO 
+		pw.print("public class ");
+		pw.print(name);
+		if (superclass != "") {
+			pw.print(" extends " + superclass);
+		}
+		pw.print(" {");
+		pw.add();
+		for (MemberList list : memberList) {
+			list.genJava(pw);
+		}
+		pw.sub();
+		pw.println("}");
 	}
 }

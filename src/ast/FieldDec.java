@@ -16,6 +16,7 @@ public class FieldDec extends Member {
 
 	@Override
 	public void genJava(PW pw) {
-		// TODO Auto-generated method stub	
+		pw.print(type.getJavaName() + " ");
+		identifiers.genJava(pw);
 	}
 }

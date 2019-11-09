@@ -29,6 +29,12 @@ public class BasicValue extends Expr {
 	
 	@Override
 	public void genJava(PW pw) {
-		// TODO 
+		if (type == Type.intType) {
+			pw.print(Integer.toString(intValue));
+		} else if (type == Type.booleanType) {
+			pw.print(Boolean.toString(booleanValue));
+		} else {
+			pw.print(stringValue);
+		}
 	}
 }

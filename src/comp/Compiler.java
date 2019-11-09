@@ -157,6 +157,7 @@ public class Compiler {
 
 	private ClassDec classDec() {
 		String superclassName = "";
+		List<MemberList> membersList = null;
 		
 		if (lexer.token == Token.ID && lexer.getStringValue().equals("open")) {
 			lexer.nextToken();
@@ -180,13 +181,13 @@ public class Compiler {
 			lexer.nextToken();
 		}
 
-		memberList();
+		membersList = memberList();
 		
 		if ( lexer.token != Token.END)
 			error("'end' expected");
 		lexer.nextToken();
 		
-		return new ClassDec(className, superclassName);
+		return new ClassDec(className, superclassName, membersList);
 
 	}
 

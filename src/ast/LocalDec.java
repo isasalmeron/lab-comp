@@ -19,6 +19,9 @@ public class LocalDec extends Statement {
     
     @Override
 	public void genJava(PW pw) {
-		type.getJavaName();		
+		type.getJavaName();
+		idList.genJava(pw);
+		pw.print(" = ");
+		expr.genJava(pw);
 	}
 }

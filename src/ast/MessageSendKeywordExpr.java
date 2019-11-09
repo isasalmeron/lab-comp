@@ -11,4 +11,9 @@ public class MessageSendKeywordExpr extends MessageSendExpr {
 		this.messageName = messageName;
 		this.argList = argList;
 	}
+	
+	@Override
+	public void genJava(PW pw) {
+		// TODO Auto-generated method stub
+	}
 }

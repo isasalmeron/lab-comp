@@ -5,6 +5,6 @@ public class FieldExpr extends Expr {
 
 	@Override
 	public void genJava(PW pw) {
-		// TODO Auto-generated method stub
+		field.genJava(pw);
 	}
 }
