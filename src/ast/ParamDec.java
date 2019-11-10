@@ -16,6 +16,7 @@ public class ParamDec {
 	}
 
 	public void genJava(PW pw) {
-		// TODO Auto-generated method stub
+		pw.print(type.getName());
+		pw.print(identifier);
 	}
 }

@@ -15,6 +15,7 @@ public class NewObjectExpr extends Expr {
 
 	@Override
 	public void genJava(PW pw) {
-		// TODO Auto-generated method stub
+		pw.print(aClass);
+		pw.print(".new");
 	}
 }

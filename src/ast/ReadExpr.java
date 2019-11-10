@@ -7,7 +7,7 @@ package ast;
 
 import lexer.Token;
 
-public class ReadExpr extends PrimaryExpr {
+public class ReadExpr extends Expr {
 	
 	Token readType;
     
