@@ -17,11 +17,9 @@ abstract public class Type {
     public static Type intType = new TypeInt();
     public static Type stringType = new TypeString();
     public static Type undefinedType = new TypeUndefined();
-    public static Type nillType = new TypeNil(); 
+    public static Type nilType = new TypeNil(); 
     
     public String getName() {
         return name;
     }
-
-    abstract public String getJavaName();
 }

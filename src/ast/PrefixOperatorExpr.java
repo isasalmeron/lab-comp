@@ -21,4 +21,9 @@ public class PrefixOperatorExpr extends Expr {
 	public void genJava(PW pw) {
 		// TODO Auto-generated method stub
 	}
+
+	@Override
+	public Type getType() {
+		return expr.getType();
+	}
 }

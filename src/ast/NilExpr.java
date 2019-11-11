@@ -13,4 +13,10 @@ public class NilExpr extends Expr {
 	public void genJava(PW pw) {
 		pw.print("null");
 	}
+
+	@Override
+	public Type getType() {
+		// TODO Auto-generated method stub
+		return Type.nilType;
+	}
 }

@@ -14,6 +14,11 @@ public class LiteralString extends Expr {
     }
     
     @Override
+    public Type getType() {
+    	return Type.stringType;
+    }
+    
+    @Override
     public void genJava(PW pw) {
         pw.print(literalString);
     }

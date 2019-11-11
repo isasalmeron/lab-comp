@@ -8,4 +8,6 @@ package ast;
 abstract public class Expr {
 	
     abstract public void genJava(PW pw);
+    
+    abstract public Type getType();
 }

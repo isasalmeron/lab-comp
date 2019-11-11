@@ -18,4 +18,13 @@ public class ReadExpr extends Expr {
 	public void genJava(PW pw) {
 		// TODO
 	}
+
+	@Override
+	public Type getType() {
+		if (readType == Token.READINT) {
+			return Type.intType;
+		}
+
+		return Type.stringType;
+	}
 }

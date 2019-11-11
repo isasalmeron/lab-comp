@@ -7,13 +7,14 @@ package ast;
 
 import java.util.List;
 
-public class ClassDec {
+public class ClassDec extends Type {
 	
 	private String name;
 	private String superclass;
 	private List<MemberList> memberList;
 
 	public ClassDec(final String name, String superclass, List<MemberList> memberList) {
+		super(name);
 		this.name = name;
 		this.superclass = superclass;
 		this.memberList = memberList;

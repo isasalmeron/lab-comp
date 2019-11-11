@@ -10,7 +10,4 @@ public class TypeUndefined extends Type {
     
    public TypeUndefined() { super("undefined"); }
    
-   public String getJavaName() {
-      return "null";
-   }  
 }

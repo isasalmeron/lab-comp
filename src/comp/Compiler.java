@@ -839,11 +839,11 @@ public class Compiler {
 				if (lexer.token == Token.ID) {
 					messageName = lexer.getStringValue();
 					next();
-					return new MessageSendUnaryExpr(messageName);
+					//return new MessageSendUnaryExpr(messageName);
 				} else if (lexer.token == Token.IDCOLON) {
 					next();
 					argList = exprList();
-					return new MessageSendKeywordExpr(messageName, argList);
+					//return new MessageSendKeywordExpr(messageName, argList);
 				} else {
 					error("An identifier was expected");
 				}
@@ -862,14 +862,14 @@ public class Compiler {
 				if (lexer.token == Token.ID) {
 					messageName = lexer.getStringValue();
 					next();
-					return new MessageSendUnaryExpr(messageName);
+					//return new MessageSendUnaryExpr(messageName);
 				} else if (lexer.token == Token.IDCOLON) {
 					next();
 					argList = exprList();
-					return new MessageSendKeywordExpr(messageName, argList);
+					//return new MessageSendKeywordExpr(messageName, argList);
 				} else if (lexer.token == Token.NEW) {
 					next();
-					return new NewObjectExpr(receiverName);
+					//return new NewObjectExpr(receiverName);
 				} else {
 					error("ident, ident: or 'new' keyword was expected");
 				}
@@ -902,7 +902,7 @@ public class Compiler {
 				} else if (lexer.token == Token.IDCOLON) {
 					next();
 					argList = exprList();
-					return new MessageSendKeywordExpr(messageName, argList);
+					//return new MessageSendKeywordExpr(messageName, argList);
 				} else {
 					error("An identifier was expected");
 				}

@@ -7,15 +7,21 @@ package ast;
 
 public class NewObjectExpr extends Expr {
 	
-	String aClass;
+	ClassDec aClass;
 	
-	public NewObjectExpr(final String aClass) {
+	public NewObjectExpr(final ClassDec aClass) {
 		this.aClass = aClass;
 	}
 
 	@Override
 	public void genJava(PW pw) {
-		pw.print(aClass);
-		pw.print(".new");
+		pw.print("new ");
+		pw.print(aClass.getName());
+	}
+
+	@Override
+	public Type getType() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -13,10 +13,14 @@ public class FieldDec extends Member {
 		this.type = type;
 		this.identifiers = identifiers;
 	}
+	
+	public Type getType() {
+		return this.type;
+	}
 
 	@Override
 	public void genJava(PW pw) {
-		pw.print(type.getJavaName() + " ");
+		pw.print(type.getName() + " ");
 		identifiers.genJava(pw);
 	}
 }

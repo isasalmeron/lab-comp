@@ -18,6 +18,11 @@ public class LiteralInt extends Expr {
     }
     
     @Override
+    public Type getType() {
+    	return Type.intType;
+    }
+    
+    @Override
     public void genJava(PW pw) {
         pw.printIdent("" + value);
     }

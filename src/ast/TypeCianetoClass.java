@@ -13,11 +13,6 @@ public class TypeCianetoClass extends Type {
       super(name);
    }
 
-   @Override
-   public String getJavaName() {
-      return getName();
-   }
-
    private String name;
    private TypeCianetoClass superclass;
    // private FieldList fieldList;

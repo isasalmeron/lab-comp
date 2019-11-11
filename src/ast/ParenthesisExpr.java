@@ -14,6 +14,11 @@ public class ParenthesisExpr extends Expr {
 	}
 	
 	@Override
+	public Type getType() {
+		return expr.getType();
+	}
+	
+	@Override
 	public void genJava(PW pw) {
 		pw.print("(");
 		expr.genJava(pw);

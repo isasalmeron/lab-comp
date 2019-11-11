@@ -19,6 +19,28 @@ public class CompositeExpr extends Expr {
 	}
 	
 	@Override
+	public Type getType() {
+		Type leftType = left.getType();
+		Type rightType = right.getType();
+
+		if (operator == Token.EQ || operator == Token.NEQ) {
+			if (leftType == rightType) {
+				return Type.booleanType;
+			}
+
+		} else if (operator == Token.LT 
+				|| operator == Token.GT
+				|| operator == Token.LE
+				|| operator == Token.GE) {
+			if (leftType == Type.intType && rightType == Type.intType) {
+				return Type.booleanType;
+			}
+		}
+
+		return Type.undefinedType;
+	}
+	
+	@Override
 	public void genJava(PW pw) {
 		left.genJava(pw);
 		pw.print(" " + operator + " ");

@@ -11,8 +11,4 @@ public class TypeNil extends Type {
 		super("nil");
 	}
 
-	@Override
-	public String getJavaName() {
-		return "null";
-	}
 }

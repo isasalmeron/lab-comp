@@ -15,6 +15,11 @@ public class LiteralBoolean extends Expr {
     public LiteralBoolean( boolean value ) {
         this.value = value;
     }
+    
+    @Override
+    public Type getType() {
+    	return Type.booleanType;
+    }
 
     @Override
 	public void genJava(PW pw) {
