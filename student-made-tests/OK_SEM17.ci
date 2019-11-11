@@ -8,9 +8,9 @@ class Program
    
     func run {
         
-        var Int num = In.readInt;
+        var Int n = In.readInt;
 
-        if num < 15 { 
+        if n < 15 { 
             Out.println: "pequeno"; 
             assert n < 15, "n < 15";
         } 

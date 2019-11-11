@@ -1,4 +1,4 @@
-@check("check", "variableRedeclaration")
+@annot("check", "variableRedeclaration")
 @cep(7, "Redeclaração da variável  'i'", "Variable 'i' is being redeclared",
   "comp.Compiler.localDec()")
   
