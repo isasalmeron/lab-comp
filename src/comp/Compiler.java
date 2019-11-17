@@ -246,7 +246,7 @@ public class Compiler {
 		}
 		
 		String methodName = lexer.getStringValue();
-		List<ParamDec> formalParamDec = null;
+		List<Variable> formalParamDec = null;
 		Type returnType = null;
 		
 		if (symbolTable.getInClass(methodName) != null) {
@@ -273,22 +273,25 @@ public class Compiler {
 		}
 		next();
 		
+		MethodDec method;
+		
+		if (formalParamDec != null) {
+			method = new MethodDec(qualifier, methodName, formalParamDec, returnType);
+		} else {
+			method = new MethodDec(qualifier, methodName, returnType);
+		}
+		
+		symbolTable.putInClass(methodName, method);
+		
 		List<Statement> stmtList = statementList();
+		
+		method.setStmtList(stmtList);
 		
 		if (lexer.token != Token.RIGHTCURBRACKET) {
 			error("'}' expected");
 		}
 		next();
 		
-		MethodDec method;
-		
-		if (formalParamDec != null) {
-			method = new MethodDec(qualifier, methodName, formalParamDec, stmtList, returnType);
-		} else {
-			method = new MethodDec(qualifier, methodName, stmtList, returnType);
-		}
-		
-		symbolTable.putInClass(methodName, method);
 		symbolTable.clearLocal();
 		
 		return method;
@@ -713,8 +716,8 @@ public class Compiler {
 		return expressionList;
 	}
 
-	private List<ParamDec> formalParamDec() {
-		List<ParamDec> formalParamDec = new ArrayList<>();
+	private List<Variable> formalParamDec() {
+		List<Variable> formalParamDec = new ArrayList<>();
 		formalParamDec.add(paramDec());
 		
 		while (lexer.token == Token.COMMA) {
@@ -879,16 +882,48 @@ public class Compiler {
 			receiverName = lexer.getStringValue();
 			next();
 			
+			Variable variable = (Variable) symbolTable.getInLocal(receiverName);
+			
 			if (lexer.token == Token.DOT) {
 				next();
 				
 				if (lexer.token == Token.ID) {
 					messageName = lexer.getStringValue();
 					next();
+					
+					if (variable == null) {
+						error("Variable '" + receiverName + "' not declared");
+					}
+					
+					ClassDec classDec = (ClassDec) symbolTable.getInGlobal(variable.getType().getName());
+					
+					if (classDec == null) {
+						error("Class '" + messageName + "' not declared");
+					}
+					
+					
 					//return new MessageSendUnaryExpr(messageName);
 				} else if (lexer.token == Token.IDCOLON) {
+					String methodName = lexer.getStringValue();
 					next();
 					argList = exprList();
+					
+					if (variable == null) {
+						error("Variable '" + receiverName + "' not declared");
+					}
+					
+					ClassDec classDec = (ClassDec) symbolTable.getInGlobal(variable.getType().getName());
+					
+					if (classDec == null) {
+						error("Class '" + messageName + "' not declared");
+					}
+					
+					MethodDec method = classDec.findMethod(methodName);
+					
+					if (method == null && classDec.getMemberList().isEmpty() && symbolTable.getInClass(methodName) == null) {
+						error("Method '" + methodName + "' not declared");
+					}
+					
 					//return new MessageSendKeywordExpr(messageName, argList);
 				} else if (lexer.token == Token.NEW) {
 					next();
@@ -905,10 +940,8 @@ public class Compiler {
 				}
 			}
 			
-			Member member = (Member) symbolTable.getInClass(receiverName);
-			
-			if (member != null) {
-				return member;
+			if (variable != null) {
+				return variable;
 			}
 			
 			error("Member '" + receiverName + "' not declared");
@@ -921,7 +954,14 @@ public class Compiler {
 				next();
 				
 				if (lexer.token == Token.ID) {
+					messageName = lexer.getStringValue();
 					next();
+					
+					Member member = (Member) symbolTable.getInClass(messageName);
+					
+					if (member == null) {
+						error("Member '" + messageName + "' not found");
+					}
 					
 					if (lexer.token == Token.DOT) {
 						next();
@@ -968,7 +1008,7 @@ public class Compiler {
 		return signal;
 	}
 	
-	private ParamDec paramDec() {
+	private Variable paramDec() {
 		Type type = type();
 		
 		if (lexer.token != Token.ID) {
@@ -978,7 +1018,7 @@ public class Compiler {
 		String paramName = lexer.getStringValue();
 		next();
 		
-		ParamDec param = new ParamDec(type, paramName);
+		Variable param = new Variable(type, paramName);
 		symbolTable.putInLocal(paramName, param);
 		
 		return param;

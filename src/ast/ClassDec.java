@@ -5,6 +5,7 @@
 
 package ast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClassDec extends Type {
@@ -17,6 +18,7 @@ public class ClassDec extends Type {
 		super(name);
 		this.name = name;
 		this.superclass = superclass;
+		this.memberList = new ArrayList<>();
 	}
 	
 	public String getName() {
@@ -25,6 +27,37 @@ public class ClassDec extends Type {
 	
 	public void setMemberList(List<Member> memberList) {
 		this.memberList = memberList;
+	}
+	
+	public MethodDec findMethod(String methodName) {
+		for (Member m : this.memberList) {
+			if (m instanceof MethodDec) {
+				MethodDec castedMethod = (MethodDec) m;
+				
+				if (methodName.equals(castedMethod.getName())) {
+					return castedMethod;
+				}
+			}
+		}
+
+		return null;
+	}
+	
+	public Variable findVariable(String variableName) {
+		for (Member m : this.memberList) {
+			if (m instanceof Variable) {
+				Variable casteVariable = (Variable) m;
+				
+				if (variableName.equals(casteVariable.getName())) {
+					return casteVariable;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public List<Member> getMemberList() {
+		return this.memberList;
 	}
 	
 	public void genJava(PW pw) {

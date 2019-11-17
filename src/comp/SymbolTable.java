@@ -70,28 +70,8 @@ public class SymbolTable {
 		return this.globalTable.get(key);
 	}
 	
-	public Object getInClass(final Object key) {
-		Object result;
-		
-		if ((result = localTable.get(key)) != null) {
-			return result;
-		}
-		
+	public Object getInClass(final Object key) {	
 		return this.classTable.get(key);
-	}
-	
-	public Object getClass(final Object key) {
-		Object result;
-		
-		if ((result = localTable.get(key)) != null) {
-			return result;
-		}
-		
-		return this.classTable.get(key);
-	}
-	
-	public Object getMethod(final Object key) {
-		return this.methodTable.get(key);
 	}
 	
 	public Object getInCurrentScope(final Object key) {

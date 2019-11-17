@@ -5,6 +5,7 @@
 
 package ast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lexer.Token;
@@ -12,41 +13,47 @@ import lexer.Token;
 public class MethodDec extends Member {
 	
 	private Qualifier qualifier;
-	private String identifier;
-	private List<ParamDec> formalParamDec;
+	private String name;
+	private List<Variable> formalParamDec;
 	private List<Statement> stmtList;
 	private Type returnType;
     
-    public MethodDec(final Qualifier qualifier, final String identifier, final List<ParamDec> formalParamDec,
-    		List<Statement> stmtList, Type returnType) {
+    public MethodDec(final Qualifier qualifier, final String name, final List<Variable> formalParamDec, Type returnType) {
     	this.qualifier = qualifier;
-    	this.identifier = identifier;
+    	this.name = name;
     	this.formalParamDec = formalParamDec;
-    	this.stmtList = stmtList;
+    	this.stmtList = new ArrayList<>();
     	this.returnType = returnType;
     }
     
-    public MethodDec(final String identifier, final List<ParamDec> formalParamDec,
-    		List<Statement> stmtList, Type returnType) {
+    public MethodDec(final String name, final List<Variable> formalParamDec, Type returnType) {
     	this.qualifier = new Qualifier(Token.PUBLIC);
-    	this.identifier = identifier;
+    	this.name = name;
     	this.formalParamDec = formalParamDec;
-    	this.stmtList = stmtList;
+    	this.stmtList = new ArrayList<>();
     	this.returnType = returnType;
     }
     
-    public MethodDec(final Qualifier qualifier, final String identifier, List<Statement> stmtList, Type returnType) {
+    public MethodDec(final Qualifier qualifier, final String name, Type returnType) {
     	this.qualifier = qualifier;
-    	this.identifier = identifier;
-    	this.stmtList = stmtList;
+    	this.name = name;
+    	this.stmtList = new ArrayList<>();
     	this.returnType = returnType;
     }
     
-    public MethodDec(final String identifier, List<Statement> stmtList, Type returnType) {
+    public MethodDec(final String name, Type returnType) {
     	this.qualifier = new Qualifier(Token.PUBLIC);
-    	this.identifier = identifier;
-    	this.stmtList = stmtList;
+    	this.name = name;
+    	this.stmtList = new ArrayList<>();
     	this.returnType = returnType;
+    }
+    
+    public String getName() {
+    	return this.name;
+    }
+    
+    public void setStmtList(List<Statement> stmtList) {
+    	this.stmtList = stmtList;
     }
 
 	@Override

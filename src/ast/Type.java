@@ -21,6 +21,6 @@ abstract public class Type {
     public static Type cianetoClassType = new TypeCianetoClass(null);
     
     public String getName() {
-        return name;
+        return this.name;
     }
 }
