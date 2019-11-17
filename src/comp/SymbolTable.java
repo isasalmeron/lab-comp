@@ -11,12 +11,13 @@ import java.util.List;
 import ast.Variable;
 
 public class SymbolTable {
-	private Hashtable<String, Object> globalTable, classTable, localTable;
+	private Hashtable<String, Object> globalTable, classTable, localTable, methodTable;
 	
 	public SymbolTable() {
 		globalTable = new Hashtable<String, Object>();
 		classTable = new Hashtable<String, Object>();
 		localTable = new Hashtable<String, Object>();
+		methodTable = new Hashtable<String, Object>();
 	}
 	
 	public void putInGlobal(final String key, final Object value) {
@@ -25,6 +26,14 @@ public class SymbolTable {
 	
 	public void putInClass(final String key, final Object value) {
 		classTable.put(key, value);
+	}
+	
+	public void addClass(final String key, final Object value) {
+		classTable.put(key, value);
+	}
+	
+	public void addMethod(final String key, final Object value) {
+		methodTable.put(key, value);
 	}
 	
 	public void putInLocal(final String key, final Object value) {
@@ -62,16 +71,38 @@ public class SymbolTable {
 	}
 	
 	public Object getInClass(final Object key) {
+		return this.classTable.get(key);
+	}
+	
+	public Object getClass(final Object key) {
 		Object result;
 		
 		if ((result = localTable.get(key)) != null) {
 			return result;
 		}
 		
-		return this.getInClass(key);
+		return this.classTable.get(key);
+	}
+	
+	public Object getMethod(final Object key) {
+		return this.methodTable.get(key);
+	}
+	
+	public Object getInCurrentScope(final Object key) {
+		Object result;
+		
+		if ((result = localTable.get(key)) != null) {
+			return result;
+		}
+		
+		return this.classTable.get(key);
 	}
 	
 	public void clearLocal() {
 		localTable.clear();
+	}
+	
+	public void clearClass() {
+		classTable.clear();
 	}
 }

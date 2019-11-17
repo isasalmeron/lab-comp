@@ -5,8 +5,6 @@
 
 package ast;
 
-public abstract class Member {
-	
-	abstract public void genJava(PW pw);
+public abstract class Member extends Expr {
 
 }

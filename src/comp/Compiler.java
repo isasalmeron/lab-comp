@@ -187,7 +187,13 @@ public class Compiler {
 			error("'end' expected");
 		lexer.nextToken();
 		
-		return new ClassDec(className, superclassName, membersList);
+		symbolTable.clearClass();
+		
+		ClassDec classDec = new ClassDec(className, superclassName, membersList);
+		
+		symbolTable.putInGlobal(className, classDec);
+		
+		return classDec;
 
 	}
 
@@ -244,6 +250,10 @@ public class Compiler {
 		List<ParamDec> formalParamDec = null;
 		Type returnType = null;
 		
+		if (symbolTable.getInClass(methodName) != null) {
+			error("Method '" + methodName + "' already declared in this scope");
+		}
+		
 		if (lexer.token == Token.IDCOLON) {
 			// keyword method. It has parameters
 			lexer.nextToken();
@@ -271,11 +281,18 @@ public class Compiler {
 		}
 		next();
 		
+		MethodDec method;
+		
 		if (formalParamDec != null) {
-			return new MethodDec(qualifier, methodName, formalParamDec, stmtList, returnType);
+			method = new MethodDec(qualifier, methodName, formalParamDec, stmtList, returnType);
+		} else {
+			method = new MethodDec(qualifier, methodName, stmtList, returnType);
 		}
 		
-		return new MethodDec(qualifier, methodName, stmtList, returnType);
+		symbolTable.putInClass(methodName, method);
+		symbolTable.clearLocal();
+		
+		return method;
 	}
 
 	private List<Statement> statementList() {
@@ -358,6 +375,7 @@ public class Compiler {
 			}
 			
 			variables.add(variable);
+			symbolTable.putInLocal(variable.getName(), variable);
 			
 			if (lexer.token == Token.COMMA) {
 				next();
@@ -514,6 +532,7 @@ public class Compiler {
 			}
 			
 			variables.add(variable);
+			symbolTable.putInClass(variable.getName(), variable);
 			
 			if (lexer.token == Token.COMMA) {
 				next();
@@ -621,9 +640,6 @@ public class Compiler {
 	}
 
 	private LiteralInt literalInt() {
-
-		LiteralInt e = null;
-
 		// the number value is stored in lexer.getToken().value as an object of
 		// Integer.
 		// Method intValue returns that value as an value of type int.
@@ -636,16 +652,6 @@ public class Compiler {
 		String value = lexer.getStringValue();
 		lexer.nextToken();
 		return new LiteralString(value);
-	}
-	
-	private static boolean startExpr(Token token) {
-
-		return token == Token.FALSE || token == Token.TRUE
-				|| token == Token.NOT || token == Token.SELF
-				|| token == Token.LITERALINT || token == Token.SUPER
-				|| token == Token.LEFTPAR || token == Token.NIL
-				|| token == Token.ID || token == Token.LITERALSTRING;
-
 	}
 
 	private Expr assignExpr() {
@@ -678,17 +684,6 @@ public class Compiler {
 		error("A basic value was expected");
 		
 		return null;
-	}
-
-	private void compStatement() {
-		check(Token.LEFTCURBRACKET, "'{' was expected");
-		next();
-
-		while (lexer.token != Token.RIGHTCURBRACKET && lexer.token != Token.END) {
-			statement();
-		}
-		
-		check(Token.RIGHTCURBRACKET, "'}' was expected");
 	}
 
 	private List<Expr> exprList() {
@@ -751,14 +746,16 @@ public class Compiler {
 	private Expr sumSubExpression() {
 		Token operator = null;
 		
-		Expr expr = term();
+		Expr left = term();
+		Expr right;
 		
 		while (lexer.token == Token.PLUS || lexer.token == Token.MINUS || lexer.token == Token.OR) {
 			operator = lowOperator();
-			expr = new CompositeExpr(expr, operator, term());
+			right = term();		
+			left = new CompositeExpr(left, operator, term());
 		}
 		
-		return expr;
+		return left;
 	}
 
 	private Token lowOperator() {
@@ -801,6 +798,10 @@ public class Compiler {
 		}
 		
 		factor = factor();
+		
+		if (signal != null && factor.getType() != Type.intType) {
+			error("Operator '" + signal + "' does not accept '" + factor.getType().getName() + "' expressions");
+		}
 		
 		return new PrefixOperatorExpr(signal, factor);
 	}
@@ -890,6 +891,8 @@ public class Compiler {
 					error("ident, ident: or 'new' keyword was expected");
 				}
 			}
+			
+			return (Variable) symbolTable.getInLocal(receiverName);
 		}
 		
 		if (lexer.token == Token.SELF) {

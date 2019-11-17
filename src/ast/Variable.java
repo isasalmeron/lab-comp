@@ -2,7 +2,7 @@ package ast;
 
 import lexer.Token;
 
-public class Variable {
+public class Variable extends Member {
 	
 	private Qualifier qualifier;
 	private Type type;
@@ -24,12 +24,19 @@ public class Variable {
 		return this.qualifier;
 	}
 	
+	public String getName() {
+		return this.name;
+	}
+	
+	@Override
 	public Type getType() {
 		return this.type;
 	}
-	
-	public String getName() {
-		return this.name;
+
+	@Override
+	public void genJava(PW pw) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

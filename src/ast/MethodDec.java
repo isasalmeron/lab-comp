@@ -53,4 +53,10 @@ public class MethodDec extends Member {
 	public void genJava(PW pw) {
 		// TODO
 	}
+
+	@Override
+	public Type getType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
