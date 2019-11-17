@@ -199,14 +199,14 @@ public class Compiler {
 		
 		while (true) {
 			qualifier = qualifier();
-			if ( lexer.token == Token.VAR ) {
-				member = fieldDec();
+			if (lexer.token == Token.VAR) {
+				member = fieldDec(qualifier);
 				memberList = new MemberList(qualifier, member);
 				memberLists.add(memberList);
 				
 			}
-			else if ( lexer.token == Token.FUNC ) {
-				member = methodDec();
+			else if (lexer.token == Token.FUNC) {
+				member = methodDec(qualifier);
 				memberList = new MemberList(qualifier, member);
 				memberLists.add(memberList);
 			}
@@ -233,7 +233,7 @@ public class Compiler {
 		}
 	}
 
-	private MethodDec methodDec() {
+	private MethodDec methodDec(Qualifier qualifier) {
 		lexer.nextToken();
 		
 		if (lexer.token != Token.ID && lexer.token != Token.IDCOLON) {
@@ -272,10 +272,10 @@ public class Compiler {
 		next();
 		
 		if (formalParamDec != null) {
-			return new MethodDec(methodName, formalParamDec, stmtList, returnType);
+			return new MethodDec(qualifier, methodName, formalParamDec, stmtList, returnType);
 		}
 		
-		return new MethodDec(methodName, stmtList, returnType);
+		return new MethodDec(qualifier, methodName, stmtList, returnType);
 	}
 
 	private List<Statement> statementList() {
@@ -346,7 +346,26 @@ public class Compiler {
 		
 		check(Token.ID, "A variable name was expected");
 		
-		IdList idList = idList();
+		List<Variable> variables = new ArrayList<>();
+		Variable variable;
+		
+		while (lexer.token == Token.ID) {
+			variable = new Variable(type, lexer.getStringValue());
+			next();
+			
+			if (symbolTable.getInLocal(variable.getName()) != null) {
+				error("Local variable '" + variable.getName() + "' already declared");
+			}
+			
+			variables.add(variable);
+			
+			if (lexer.token == Token.COMMA) {
+				next();
+			}
+			else {
+				break;
+			}
+		}
 		
 		if (lexer.token == Token.ASSIGN) {
 			next();
@@ -354,7 +373,7 @@ public class Compiler {
 			expr = expr();
 		}
 		
-		return new LocalDec(type, idList, expr);
+		return new LocalDec(type, variables, expr);
 	}
 
 	private RepeatStat repeatStat() {	
@@ -478,30 +497,23 @@ public class Compiler {
 		return expr;
 	}
 
-	private FieldDec fieldDec() {
+	private FieldDec fieldDec(Qualifier qualifier) {
 		next();
 		Type type = type();
-		IdList identifiers = null;
+		Variable variable;
+		List<Variable> variables = new ArrayList<>();
 		
-		if (lexer.token == Token.ID) {
-			identifiers = idList();
-		} else {
-			this.error("A field name was expected");
-		}
-		
-		if (lexer.token == Token.SEMICOLON) {
-			next();
-		}
-		
-		return new FieldDec(type, identifiers);
-	}
-	
-	private IdList idList() {
-		List<String> identifiers = new ArrayList<>();
+		check(lexer.token, "A field name was expected");
 		
 		while (lexer.token == Token.ID) {
-			identifiers.add(lexer.getStringValue());
+			variable = new Variable(qualifier, type, lexer.getStringValue());
 			next();
+			
+			if (symbolTable.getInClass(variable.getName()) != null) {
+				error("Variable '" + variable.getName() + "' already declared in this scope");
+			}
+			
+			variables.add(variable);
 			
 			if (lexer.token == Token.COMMA) {
 				next();
@@ -511,7 +523,11 @@ public class Compiler {
 			}
 		}
 		
-		return new IdList(identifiers);
+		if (lexer.token == Token.SEMICOLON) {
+			next();
+		}
+		
+		return new FieldDec(qualifier, type, variables);
 	}
 
 	private Type type() {

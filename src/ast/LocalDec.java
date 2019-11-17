@@ -5,22 +5,33 @@
 
 package ast;
 
+import java.util.List;
+
 public class LocalDec extends Statement {
 	
 	private Type type;
-	private IdList idList;
+	private List<Variable> variables;
 	private Expr expr;
     
-    public LocalDec(Type type, IdList idList, Expr expr) { 
+    public LocalDec(Type type, List<Variable> variables, Expr expr) { 
     	this.type = type;
-    	this.idList = idList;
+    	this.variables = variables;
     	this.expr = expr;
     }
     
     @Override
 	public void genJava(PW pw) {
 		type.getName();
-		idList.genJava(pw);
+		
+		int size = variables.size();
+		for (int i = 0; i < size; i++) {
+			pw.print(variables.get(i).getName());
+			
+			if (i != size - 1) {
+				pw.print(",");
+			}
+		}
+		
 		pw.print(" = ");
 		expr.genJava(pw);
 	}

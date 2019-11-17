@@ -6,14 +6,16 @@
 package comp;
 
 import java.util.Hashtable;
+import java.util.List;
 
-import ast.IdList;
+import ast.Variable;
 
 public class SymbolTable {
-	private Hashtable<String, Object> globalTable, localTable;
+	private Hashtable<String, Object> globalTable, classTable, localTable;
 	
 	public SymbolTable() {
 		globalTable = new Hashtable<String, Object>();
+		classTable = new Hashtable<String, Object>();
 		localTable = new Hashtable<String, Object>();
 	}
 	
@@ -21,24 +23,52 @@ public class SymbolTable {
 		globalTable.put(key, value);
 	}
 	
+	public void putInClass(final String key, final Object value) {
+		classTable.put(key, value);
+	}
+	
 	public void putInLocal(final String key, final Object value) {
 		localTable.put(key, value);
 	}
 	
-	public void putAllInLocal(IdList variables) {
-		for (String variable : variables.getIdentifiers()) {
-			this.putInLocal(variable, variable);
+	public void putAllInLocal(List<Variable> variables) {
+		for (Variable variable : variables) {
+			this.putInLocal(variable.getName(), variable);
+		}
+	}
+	
+	public void putAllInGlobal(List<Variable> variables) {
+		for (Variable variable : variables) {
+			this.putInGlobal(variable.getName(), variable);
 		}
 	}
 	
 	public Object get(final Object key) {
 		Object result;
 		
-		if ((result = localTable.get(key)) != null) {
+		if ((result = this.getInClass(key)) != null) {
 			return result;
 		}
 		
 		return globalTable.get(key);
+	}
+	
+	public Object getInLocal(final Object key) {
+		return localTable.get(key);
+	}
+	
+	public Object getInGlobal(final Object key) {
+		return this.globalTable.get(key);
+	}
+	
+	public Object getInClass(final Object key) {
+		Object result;
+		
+		if ((result = localTable.get(key)) != null) {
+			return result;
+		}
+		
+		return this.getInClass(key);
 	}
 	
 	public void clearLocal() {
