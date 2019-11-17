@@ -71,6 +71,12 @@ public class SymbolTable {
 	}
 	
 	public Object getInClass(final Object key) {
+		Object result;
+		
+		if ((result = localTable.get(key)) != null) {
+			return result;
+		}
+		
 		return this.classTable.get(key);
 	}
 	

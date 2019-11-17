@@ -5,7 +5,7 @@
 
 package ast;
 
-public class ParamDec {
+public class ParamDec extends Member {
 	
 	private Type type;
 	private String identifier;
@@ -18,5 +18,11 @@ public class ParamDec {
 	public void genJava(PW pw) {
 		pw.print(type.getName());
 		pw.print(identifier);
+	}
+
+	@Override
+	public Type getType() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

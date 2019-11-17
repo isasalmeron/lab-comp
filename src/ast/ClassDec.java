@@ -13,15 +13,18 @@ public class ClassDec extends Type {
 	private String superclass;
 	private List<MemberList> memberList;
 
-	public ClassDec(final String name, String superclass, List<MemberList> memberList) {
+	public ClassDec(final String name, String superclass) {
 		super(name);
 		this.name = name;
 		this.superclass = superclass;
-		this.memberList = memberList;
 	}
 	
 	public String getName() {
 		return this.name;
+	}
+	
+	public void setMemberList(List<MemberList> memberList) {
+		this.memberList = memberList;
 	}
 	
 	public void genJava(PW pw) {

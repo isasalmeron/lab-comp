@@ -45,7 +45,8 @@ public class Compiler {
 				while (lexer.token == Token.ANNOT) {
 					metaobjectAnnotation(metaobjectCallList);
 				}
-				classDec();
+				ClassDec classDec = classDec();
+				CianetoClassList.add(new TypeCianetoClass(classDec.getName()));
 			}
 			catch(CompilerError e) {
 				// if there was an exception, there is a compilation error
@@ -180,18 +181,19 @@ public class Compiler {
 
 			lexer.nextToken();
 		}
+		
+		ClassDec classDec = new ClassDec(className, superclassName);
+		symbolTable.putInGlobal(className, classDec);
 
 		membersList = memberList();
+		
+		classDec.setMemberList(membersList);
 		
 		if ( lexer.token != Token.END)
 			error("'end' expected");
 		lexer.nextToken();
 		
 		symbolTable.clearClass();
-		
-		ClassDec classDec = new ClassDec(className, superclassName, membersList);
-		
-		symbolTable.putInGlobal(className, classDec);
 		
 		return classDec;
 
@@ -561,8 +563,15 @@ public class Compiler {
 			return Type.stringType;
 		}
 		else if (lexer.token == Token.ID) {
-			TypeCianetoClass typeCianetoClass = new TypeCianetoClass(lexer.getStringValue());
+			String className = lexer.getStringValue();
 			next();
+			
+			if (symbolTable.getInGlobal(className) == null) {
+				error("Class '" + className + "' does not exist");				
+			}
+			
+			TypeCianetoClass typeCianetoClass = new TypeCianetoClass(className);
+			
 			return typeCianetoClass;
 		}
 		else {
@@ -886,13 +895,26 @@ public class Compiler {
 					//return new MessageSendKeywordExpr(messageName, argList);
 				} else if (lexer.token == Token.NEW) {
 					next();
-					//return new NewObjectExpr(receiverName);
+					
+					ClassDec classDec = (ClassDec) symbolTable.getInGlobal(receiverName);
+					
+					if (classDec == null) {
+						error("Class '" + receiverName + "' not declared");
+					}
+					
+					return new NewObjectExpr(classDec);
 				} else {
 					error("ident, ident: or 'new' keyword was expected");
 				}
 			}
 			
-			return (Variable) symbolTable.getInLocal(receiverName);
+			Member member = (Member) symbolTable.getInClass(receiverName);
+			
+			if (member != null) {
+				return member;
+			}
+			
+			error("Member '" + receiverName + "' not declared");
 		}
 		
 		if (lexer.token == Token.SELF) {
@@ -959,7 +981,10 @@ public class Compiler {
 		String paramName = lexer.getStringValue();
 		next();
 		
-		return new ParamDec(type, paramName);
+		ParamDec param = new ParamDec(type, paramName);
+		symbolTable.putInLocal(paramName, param);
+		
+		return param;
 	}
 	
 	private ReadExpr readExpr() {
