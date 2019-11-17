@@ -158,7 +158,7 @@ public class Compiler {
 
 	private ClassDec classDec() {
 		String superclassName = "";
-		List<MemberList> membersList = null;
+		List<Member> membersList = null;
 		
 		if (lexer.token == Token.ID && lexer.getStringValue().equals("open")) {
 			lexer.nextToken();
@@ -199,9 +199,8 @@ public class Compiler {
 
 	}
 
-	private List<MemberList> memberList() {
-		List<MemberList> memberLists = new ArrayList<>();
-		MemberList memberList = null;
+	private List<Member> memberList() {
+		List<Member> memberList = new ArrayList<>();
 		Qualifier qualifier = null;
 		Member member = null;
 		
@@ -209,21 +208,19 @@ public class Compiler {
 			qualifier = qualifier();
 			if (lexer.token == Token.VAR) {
 				member = fieldDec(qualifier);
-				memberList = new MemberList(qualifier, member);
-				memberLists.add(memberList);
+				memberList.add(member);
 				
 			}
 			else if (lexer.token == Token.FUNC) {
 				member = methodDec(qualifier);
-				memberList = new MemberList(qualifier, member);
-				memberLists.add(memberList);
+				memberList.add(member);
 			}
 			else {
 				break;
 			}
 		}
 		
-		return memberLists;
+		return memberList;
 	}
 
 	private void error(String msg) {

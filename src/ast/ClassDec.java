@@ -11,7 +11,7 @@ public class ClassDec extends Type {
 	
 	private String name;
 	private String superclass;
-	private List<MemberList> memberList;
+	private List<Member> memberList;
 
 	public ClassDec(final String name, String superclass) {
 		super(name);
@@ -23,7 +23,7 @@ public class ClassDec extends Type {
 		return this.name;
 	}
 	
-	public void setMemberList(List<MemberList> memberList) {
+	public void setMemberList(List<Member> memberList) {
 		this.memberList = memberList;
 	}
 	
@@ -35,8 +35,8 @@ public class ClassDec extends Type {
 		}
 		pw.print(" {");
 		pw.add();
-		for (MemberList list : memberList) {
-			list.genJava(pw);
+		for (Member member : memberList) {
+			member.genJava(pw);
 		}
 		pw.sub();
 		pw.println("}");
