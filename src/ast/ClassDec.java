@@ -34,17 +34,24 @@ public class ClassDec extends Type {
 			return null;
 		}
 		
+		MethodDec result = null;
+		
 		for (Member m : c.memberList) {
 			if (m instanceof MethodDec) {
 				MethodDec castedMethod = (MethodDec) m;
 				
 				if (methodName.equals(castedMethod.getName())) {
-					return castedMethod;
+					result = castedMethod;
+					break;
 				}
 			}
 		}
+		
+		if (result == null) {
+			result = findMethod(c.superclass, methodName);
+		}
 
-		return null;
+		return result;
 	}
 	
 	public Variable findVariable(ClassDec c, String variableName) {
@@ -52,16 +59,24 @@ public class ClassDec extends Type {
 			return null;
 		}
 		
+		Variable result = null;
+		
 		for (Member m : c.memberList) {
 			if (m instanceof Variable) {
-				Variable casteVariable = (Variable) m;
+				Variable castedVariable = (Variable) m;
 				
-				if (variableName.equals(casteVariable.getName())) {
-					return casteVariable;
+				if (variableName.equals(castedVariable.getName())) {
+					result = castedVariable;
+					break;
 				}
 			}
 		}
-		return null;
+		
+		if (result == null) {
+			result = findVariable(c.superclass, variableName);
+		}
+		
+		return result;
 	}
 	
 	public Variable findVariableInSuper(String variableName) {
@@ -80,14 +95,14 @@ public class ClassDec extends Type {
 		return this.findMethod(superclass, methodName);
 	}
 	
-	public Member findInSuper(String memberName) {
+	public Member findMember(ClassDec c, String memberName) {
 		Member result;
 		
-		if ((result =this.findVariable(superclass, memberName)) != null) {
+		if ((result = this.findVariable(c, memberName)) != null) {
 			return result;
 		}
 		
-		return this.findMethod(superclass, memberName);
+		return this.findMethod(c, memberName);
 	}
 	
 	public List<Member> getMemberList() {

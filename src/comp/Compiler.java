@@ -507,6 +507,12 @@ public class Compiler {
 		
 		exprList.add(expr());
 		
+		for (Expr e : exprList) {
+			if (e.getType() == Type.booleanType) {
+				error("Attempt to print a 'Boolean' expression");
+			}
+		}
+		
 		while (lexer.token == Token.COMMA) {
 			next();
 			exprList.add(expr());
@@ -775,7 +781,17 @@ public class Compiler {
 		
 		while (lexer.token == Token.PLUS || lexer.token == Token.MINUS || lexer.token == Token.OR) {
 			operator = lowOperator();
-			right = term();		
+			right = term();
+			
+			if (operator != Token.OR
+					&& (left.getType() == Type.booleanType || right.getType() == Type.booleanType)) {
+				error("Operator '" + operator + "' does not support 'Boolean' type");
+			}
+			
+			if (left.getType() != right.getType()) {
+				
+			}
+			
 			left = new CompositeExpr(left, operator, term());
 		}
 		
@@ -807,6 +823,11 @@ public class Compiler {
 		
 		while (lexer.token == Token.MULT || lexer.token == Token.DIV || lexer.token == Token.AND) {
 			operator = highOperator();
+			
+			if (operator == Token.AND && expr.getType() == Type.intType) {
+				error("Operator '&&' does not support expressions of type Int");
+			}
+			
 			expr = new CompositeExpr(expr, operator, signalFactor());
 		}
 		
@@ -852,6 +873,12 @@ public class Compiler {
 			Token operator = lexer.token;
 			next();
 			expr = factor();
+			
+			if (expr.getType() != Type.booleanType) {
+				error("Operator '!' does not support expressions of type'" + expr.getType() + "'");
+			}
+			
+			
 			return new PrefixOperatorExpr(operator, expr);
 		} else if (lexer.token == Token.NIL) {
 			next();
@@ -887,17 +914,17 @@ public class Compiler {
 					messageName = lexer.getStringValue();
 					next();
 					
-					if (classDec.findInSuper(messageName) == null) {
-						error("Member '" + messageName + "' not found in class '" + classDec.getName() + "'");
+					if (classDec.findMember(classDec, messageName) == null) {
+						error("Member '" + messageName + "' not found in class '" + classDec.getName() + "' or it's superclasses");
 					}
 					
 					//return new MessageSendUnaryExpr(messageName);
 				} else if (lexer.token == Token.IDCOLON) {
-					next();
 					messageName = lexer.getStringValue();
+					next();
 					
-					if (classDec.findInSuper(messageName) == null) {
-						error("Member '" + messageName + "' not found in class '" + classDec.getName() + "'");
+					if (classDec.findMember(classDec, messageName) == null) {
+						error("Member '" + messageName + "' not found in class '" + classDec.getName() + "' or it's superclasses");
 					}
 					
 					argList = exprList();
@@ -948,7 +975,6 @@ public class Compiler {
 				} else if (lexer.token == Token.IDCOLON) {
 					String methodName = lexer.getStringValue();
 					next();
-					argList = exprList();
 					
 					if (variable == null) {
 						error("Variable '" + receiverName + "' not declared");
@@ -971,6 +997,8 @@ public class Compiler {
 							error("Method '" + methodName + "' not found in class '" + classDec.getName() + "'");
 						}
 					}
+					
+					argList = exprList();
 					
 					//return new MessageSendKeywordExpr(messageName, argList);
 					
@@ -1007,6 +1035,10 @@ public class Compiler {
 					next();
 					
 					Member member = (Member) symbolTable.getInClass(messageName);
+					
+					if (member == null) {
+						member = currentClass.findMember(currentClass, messageName);
+					}
 					
 					if (member == null) {
 						error("Member '" + messageName + "' not found");

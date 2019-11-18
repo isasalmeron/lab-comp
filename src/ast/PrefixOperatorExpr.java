@@ -24,6 +24,23 @@ public class PrefixOperatorExpr extends Expr {
 
 	@Override
 	public Type getType() {
-		return expr.getType();
+		
+		if (expr == null) {
+			return Type.undefinedType;
+		}
+		
+		if (operator == null) {
+			return expr.getType();
+		}
+		
+		if (operator == Token.NOT && expr.getType() == Type.booleanType) {
+			return Type.booleanType;
+		}
+		
+		if ((operator == Token.MINUS || operator == Token.PLUS) && expr.getType() == Type.intType) {
+			return Type.intType;
+		}
+		
+		return Type.undefinedType;
 	}
 }
