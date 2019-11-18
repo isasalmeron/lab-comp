@@ -147,7 +147,7 @@ public class Comp {
 						nullPointerAndOtherExceptionsList.add(filename);
 						System.out.println("Runtime exception");
 					}
-					catch (Throwable t) {
+					catch (Exception t) {
 						nullPointerAndOtherExceptionsList.add(filename);
 						System.out.println("Throwable exception");
 					}
@@ -305,13 +305,21 @@ public class Comp {
 			//sb.append(this.wereButShouldNotList.size() + "/" + (numSourceFiles -  numSourceFilesWithAnnotCEP) + "\r\n");
 			//sb.append(this.wereButWrongLineList.size() + "/" + numSourceFilesWithAnnotCEP + "\r\n");
 		}
-
+		if ( this.genJava && this.filesWithJavaClassesWithCompilationErrors != null &&
+				this.filesWithJavaClassesWithCompilationErrors.size() > 0 ) {
+			sb.append("\nJwithE: " + this.filesWithJavaClassesWithCompilationErrors.size());
+		}
 		report.println("Resumo");
 		report.println("_________________________________________________________________________");
 		report.println(sb.toString());
 		report.println();
 		report.println("MI = muito importante, I = importante, PI = pouco importante, Exc = exceções");
 		report.println("Dev = deveria ter sinalizado, LE = sinalizou linha errada, SSE = sinalizado sem erro");
+		if ( this.genJava && this.filesWithJavaClassesWithCompilationErrors != null &&
+				this.filesWithJavaClassesWithCompilationErrors.size() > 0 ) {
+			report.println(" JwithE = number of Java classes with compilation errors");
+		}
+
 		report.println("_________________________________________________________________________");
 
 		report.println();
@@ -543,7 +551,7 @@ public class Comp {
 			program  = compiler.compile(input, outError );
 			callMetaobjectMethods(filename, program, outError);
 		}
-		catch ( Throwable e ) {
+		catch ( Exception e ) {
 
 		}
 
@@ -559,23 +567,30 @@ public class Comp {
 		boolean foundNCE = false;
 		for ( MetaobjectAnnotation annot : program.getMetaobjectCallList() ) {
 			String annotName = annot.getName();
+			int sizeParamList = annot.getParamList().size();
 			switch ( annotName ) {
 			case "cep":
 
 				this.numSourceFilesWithAnnotCEP++;
 
-				String message = (String ) annot.getParamList().get(2);
+				String suggestedMessage;
+				if ( sizeParamList >= 3 ) {
+					suggestedMessage = (String ) annot.getParamList().get(2);
+				}
+				else {
+					suggestedMessage = (String ) annot.getParamList().get(1);
+				}
 				int lineNumber = (Integer ) annot.getParamList().get(0);
 				if ( ! program.hasCompilationErrors() ) {
 					// there was no compilation error. There should be no call @cep(...)
 					// The source code, through calls to "@cep(...)", informs that
 					// there are errors
 					String whatToCorrect = "";
-					if ( annot.getParamList().size() >= 4 ) {
+					if ( sizeParamList >= 4 ) {
 						whatToCorrect = (String ) annot.getParamList().get(3);
 						whatToCorrect = " (" + whatToCorrect + ")";
 					}
-					this.shouldButWereNotList.add(filename + ", " + lineNumber + ", " + message +
+					this.shouldButWereNotList.add(filename + ", " + lineNumber + ", " + suggestedMessage +
 							whatToCorrect
 							);
 					if ( foundCE )
@@ -586,12 +601,11 @@ public class Comp {
 				else {
 					// there was a compilation error. Check it.
 					int lineOfError = program.getCompilationErrorList().get(0).getLineNumber();
-					String ceMessage = (String ) annot.getParamList().get(2);
 					String compilerMessage = program.getCompilationErrorList().get(0).getMessage();
 					if ( lineNumber != lineOfError ) {
 
 						String whatToCorrect = "";
-						if ( annot.getParamList().size() >= 4 ) {
+						if ( sizeParamList >= 4 ) {
 							whatToCorrect = (String ) annot.getParamList().get(3);
 							whatToCorrect = "(" + whatToCorrect + ")";
 						}
@@ -599,7 +613,7 @@ public class Comp {
 						checkAnnotList(filename, program, outError, false);
 
 						this.wereButWrongLineList.add(filename + "\n" +
-								"    correto:    " + lineNumber + ", " + ceMessage + " " + whatToCorrect + "\n" +
+								"    correto:    " + lineNumber + ", " + suggestedMessage + " " + whatToCorrect + "\n" +
 								"    sinalizado: " + lineOfError + ", " + compilerMessage);
 					}
 					else {
@@ -607,7 +621,7 @@ public class Comp {
 						// that the compiler signalled and the message of the test, given in @ce
 						correctList.add(filename + "\r\n" +
 								"The compiler message was: \"" + compilerMessage + "\"\r\n" +
-								"The 'cep' message is:      \"" + ceMessage + "\"\r\n" );
+								"The 'cep' message is:      \"" + suggestedMessage + "\"\r\n" );
 						checkAnnotList(filename, program, outError, true);
 					}
 				}
@@ -620,8 +634,8 @@ public class Comp {
 				foundNCE = true;
 				if ( program.hasCompilationErrors() ) {
 					int lineOfError = program.getCompilationErrorList().get(0).getLineNumber();
-					message = program.getCompilationErrorList().get(0).getMessage();
-					this.wereButShouldNotList.add(filename + ", " + lineOfError + ", " + message);
+					suggestedMessage = program.getCompilationErrorList().get(0).getMessage();
+					this.wereButShouldNotList.add(filename + ", " + lineOfError + ", " + suggestedMessage);
 					checkAnnotList(filename, program, outError, false);
 				}
 				else {
