@@ -1,7 +1,7 @@
 /*
     João Paulo Francisco de Paula
 */
-@cep(6, "Falta ';' após declaração do 'i'", "Missing ';'", 
+@cep(5, "Falta ';' após declaração do 'i'", "Missing ';'", 
 "comp.Compiler.localDec()")
 
 class Program

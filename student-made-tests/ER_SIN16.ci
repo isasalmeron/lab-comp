@@ -1,7 +1,7 @@
 /*
-    Jo√£o Paulo Francisco de Paula
+    Jo„o Paulo Francisco de Paula
 */
-Ôªø@cep(5, "Tipo usado como vari√°vel", "Identifier expected", 
+@cep(5, "Tipo usado como vari·vel", "Identifier expected", 
 "comp.Compiler.localDec()")
 
 class Program

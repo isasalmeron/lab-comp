@@ -785,7 +785,7 @@ public class Compiler {
 			
 			if (operator != Token.OR
 					&& (left.getType() == Type.booleanType || right.getType() == Type.booleanType)) {
-				error("Operator '" + operator + "' does not support 'Boolean' type");
+				error("Operator '" + operator.toString() + "' does not support 'Boolean' type");
 			}
 			
 			if (left.getType() != right.getType()) {
@@ -845,7 +845,7 @@ public class Compiler {
 		factor = factor();
 		
 		if (signal != null && factor.getType() != Type.intType) {
-			error("Operator '" + signal + "' does not accept '" + factor.getType().getName() + "' expressions");
+			error("Operator '" + signal.toString() + "' does not accept '" + factor.getType().getName() + "' expressions");
 		}
 		
 		return new PrefixOperatorExpr(signal, factor);
@@ -875,7 +875,7 @@ public class Compiler {
 			expr = factor();
 			
 			if (expr.getType() != Type.booleanType) {
-				error("Operator '!' does not support expressions of type'" + expr.getType() + "'");
+				error("Operator '!' does not support expressions of type'" + expr.getType().getName() + "'");
 			}
 			
 			

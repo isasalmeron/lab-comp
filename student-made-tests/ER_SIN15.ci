@@ -1,7 +1,7 @@
 /*
-    Jo√£o Paulo Francisco de Paula
+    Jo„o Paulo Francisco de Paula
 */
-Ôªø@cep(6, "N√£o pode existir coment√°rio no meio de um n√∫mero",
+@cep(6, "N„o pode existir coment·rio no meio de um n˙mero",
      "';' expected", "comp.Compiler.writeStatement()")
 
 class Program
