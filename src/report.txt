@@ -2,15 +2,15 @@ Relatório do Compilador
 
 Resumo
 _________________________________________________________________________
-MI:  26            I: 7              PI: 14            Exc: 0
-Dev: 54/140/38%    LE: 7/140/5%      SSE: 1/43/2%      
+MI:  26            I: 6              PI: 14            Exc: 0
+Dev: 53/140/37%    LE: 7/140/5%      SSE: 1/43/2%      
 
 MI = muito importante, I = importante, PI = pouco importante, Exc = exceções
 Dev = deveria ter sinalizado, LE = sinalizou linha errada, SSE = sinalizado sem erro
 _________________________________________________________________________
 
 Número de testes 'Muito importantes' em que o compilador falhou: 26
-Número de testes 'Importantes' em que o compilador falhou: 7
+Número de testes 'Importantes' em que o compilador falhou: 6
 Número de testes 'Pouco importantes' em que o compilador falhou: 14
 
 O compilador falhou em testar alguns aspectos (construções) de Cianeto. A lista abaixo consiste de entradas da forma 
@@ -68,9 +68,6 @@ Testes 'importantes' em que o compilador falhou:
     breakOutsideWhileRepeatUntil
         ER_SEM50.ci
         ER_SEM26.ci
-
-    illegalReturnStatement
-        ER_SEM35.ci
 
     expressionExpected
         ER_SEM36.ci
@@ -186,6 +183,9 @@ Testes 'importantes' em que o compilador acertou:
     scopeLocalVarField
         OK_SEM06.ci
 
+    illegalReturnStatement
+        ER_SEM35.ci
+
     localVarSameClassName
         OK_SEM12.ci
 
@@ -243,7 +243,7 @@ Testes 'pouco importantes' em que o compilador acertou
 
 _________________________________________________________________________
 
-54 de um total de 140 erros que deveriam ser sinalizados não o foram (38%)
+53 de um total de 140 erros que deveriam ser sinalizados não o foram (37%)
 7 erros foram sinalizados na linha errada (5%)
 1 erros foram sinalizados em 43 arquivos sem erro (2%)
 _________________________________________________________________________
@@ -335,8 +335,6 @@ ER_SEM61.ci, 37, Method 's' was not found in class 'C' or its superclasses (comp
 ER_SEM44.ci, 27, Command 'write' does not accept objects (comp.Compiler.writeStatement())
 
 ER_SEM37.ci, 26, Method 'set' was not found in class 'A' or its superclasses (comp.Compiler.factor())
-
-ER_SEM35.ci, 14, Illegal 'return' statement. Method returns 'void' (comp.Compiler.returnStatement())
 
 ER_SIN40.ci, 12, Attempt to declare public instance variable 'i' (comp.Compiler.classDec())
 
@@ -697,6 +695,11 @@ The 'cep' message is:      "Identifier expected"
 ER_SIN11.ci
 The compiler message was: "';' expected"
 The 'cep' message is:      "Missing 'Out.'"
+
+
+ER_SEM35.ci
+The compiler message was: "Illegal 'return' statement. Method returns 'void'"
+The 'cep' message is:      "Illegal 'return' statement. Method returns 'void'"
 
 
 ER_SEM20.ci

@@ -184,6 +184,7 @@ public class Compiler {
 		
 		ClassDec classDec = new ClassDec(className, superclassName);
 		symbolTable.putInGlobal(className, classDec);
+		this.currentClass = classDec;
 
 		membersList = memberList();
 		
@@ -282,6 +283,7 @@ public class Compiler {
 		}
 		
 		symbolTable.putInClass(methodName, method);
+		this.currentMethod = method;
 		
 		List<Statement> stmtList = statementList();
 		
@@ -417,6 +419,11 @@ public class Compiler {
 
 	private ReturnStat returnStat() {
 		next();
+		
+		if (this.currentMethod.getReturnType() == null) {
+			error("Illegal 'return' statement. Method returns 'void'");
+		}
+		
 		Expr expr = expr();
 		return new ReturnStat(expr);
 	}
@@ -901,6 +908,16 @@ public class Compiler {
 						error("Class '" + messageName + "' not declared");
 					}
 					
+					Member member = classDec.findVariable(messageName);
+					
+					if (member == null) {
+						member = (Member) symbolTable.getInLocal(messageName);
+						
+						if (member != null && !this.currentClass.getName().contentEquals(classDec.getName())) {
+							error("Member '" + messageName + "' not found in class '" + classDec.getName() + "'");
+						}
+					}
+					
 					
 					//return new MessageSendUnaryExpr(messageName);
 				} else if (lexer.token == Token.IDCOLON) {
@@ -920,11 +937,16 @@ public class Compiler {
 					
 					MethodDec method = classDec.findMethod(methodName);
 					
-					if (method == null && classDec.getMemberList().isEmpty() && symbolTable.getInClass(methodName) == null) {
-						error("Method '" + methodName + "' not declared");
+					if (method == null) {
+						method = (MethodDec) symbolTable.getInClass(methodName);
+						
+						if (method != null && !this.currentClass.getName().contentEquals(classDec.getName())) {
+							error("Method '" + methodName + "' not found in class '" + classDec.getName() + "'");
+						}
 					}
 					
 					//return new MessageSendKeywordExpr(messageName, argList);
+					
 				} else if (lexer.token == Token.NEW) {
 					next();
 					
@@ -1052,5 +1074,7 @@ public class Compiler {
 	private SymbolTable		symbolTable;
 	private Lexer			lexer;
 	private ErrorSignaller	signalError;
+	private ClassDec		currentClass;
+	private MethodDec		currentMethod;
 
 }

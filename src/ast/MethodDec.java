@@ -52,6 +52,10 @@ public class MethodDec extends Member {
     	return this.name;
     }
     
+    public Type getReturnType() {
+    	return this.returnType;
+    }
+    
     public void setStmtList(List<Statement> stmtList) {
     	this.stmtList = stmtList;
     }
