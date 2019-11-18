@@ -158,6 +158,7 @@ public class Compiler {
 
 	private ClassDec classDec() {
 		String superclassName = "";
+		ClassDec superclass = null;
 		List<Member> membersList = null;
 		
 		if (lexer.token == Token.ID && lexer.getStringValue().equals("open")) {
@@ -178,11 +179,17 @@ public class Compiler {
 			if ( lexer.token != Token.ID )
 				error("Identifier expected");
 			superclassName = lexer.getStringValue();
+			
+			superclass = (ClassDec) symbolTable.getInGlobal(superclassName);
+			
+			if (superclass == null) {
+				error("Parent class '" + superclassName + "' not found");
+			}
 
 			lexer.nextToken();
 		}
 		
-		ClassDec classDec = new ClassDec(className, superclassName);
+		ClassDec classDec = new ClassDec(className, superclass);
 		symbolTable.putInGlobal(className, classDec);
 		this.currentClass = classDec;
 
@@ -425,6 +432,7 @@ public class Compiler {
 		}
 		
 		Expr expr = expr();
+		
 		return new ReturnStat(expr);
 	}
 
@@ -866,15 +874,32 @@ public class Compiler {
 		if (lexer.token == Token.SUPER) {
 			next();
 			
+			ClassDec classDec = this.currentClass.getSuperclass();
+			
+			if (classDec == null) {
+				error("Class '" + this.currentClass.getName() + "' does not have a superclass");
+			}
+			
 			if (lexer.token == Token.DOT) {
 				next();
 				
 				if (lexer.token == Token.ID) {
 					messageName = lexer.getStringValue();
 					next();
+					
+					if (classDec.findInSuper(messageName) == null) {
+						error("Member '" + messageName + "' not found in class '" + classDec.getName() + "'");
+					}
+					
 					//return new MessageSendUnaryExpr(messageName);
 				} else if (lexer.token == Token.IDCOLON) {
 					next();
+					messageName = lexer.getStringValue();
+					
+					if (classDec.findInSuper(messageName) == null) {
+						error("Member '" + messageName + "' not found in class '" + classDec.getName() + "'");
+					}
+					
 					argList = exprList();
 					//return new MessageSendKeywordExpr(messageName, argList);
 				} else {
@@ -908,13 +933,13 @@ public class Compiler {
 						error("Class '" + messageName + "' not declared");
 					}
 					
-					Member member = classDec.findVariable(messageName);
+					Member member = classDec.findVariable(classDec, messageName);
 					
 					if (member == null) {
 						member = (Member) symbolTable.getInLocal(messageName);
 						
 						if (member != null && !this.currentClass.getName().contentEquals(classDec.getName())) {
-							error("Member '" + messageName + "' not found in class '" + classDec.getName() + "'");
+							error("Member '" + messageName + "' not found in class '" + classDec.getName() + "' or it's superclasses");
 						}
 					}
 					
@@ -935,12 +960,14 @@ public class Compiler {
 						error("Class '" + messageName + "' not declared");
 					}
 					
-					MethodDec method = classDec.findMethod(methodName);
+					MethodDec method = classDec.findMethod(classDec, methodName);
 					
 					if (method == null) {
 						method = (MethodDec) symbolTable.getInClass(methodName);
 						
-						if (method != null && !this.currentClass.getName().contentEquals(classDec.getName())) {
+						if (method == null) {
+							error("Method '" + methodName + "' not found in class '" + classDec.getName() + "'");
+						} else if (!this.currentClass.getName().contentEquals(classDec.getName())) {
 							error("Method '" + methodName + "' not found in class '" + classDec.getName() + "'");
 						}
 					}

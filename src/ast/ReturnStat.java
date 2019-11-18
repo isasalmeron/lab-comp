@@ -13,7 +13,10 @@ public class ReturnStat extends Statement {
 		this.expr = expr;
 	}
 	
-	@Override
+	public Type getType() {
+		return this.expr.getType();
+	}
+	
 	public void genJava(PW pw) {
 		pw.print("return");
 		expr.genJava(pw);
