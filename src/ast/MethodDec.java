@@ -59,6 +59,13 @@ public class MethodDec extends Member {
     public void setStmtList(List<Statement> stmtList) {
     	this.stmtList = stmtList;
     }
+    
+    public Boolean isPublic() {
+    	if (qualifier == null) {
+    		return true;
+    	}
+    	return this.qualifier.hasPublicQualifier();
+    }
 
 	@Override
 	public void genJava(PW pw) {

@@ -40,7 +40,7 @@ public class ClassDec extends Type {
 			if (m instanceof MethodDec) {
 				MethodDec castedMethod = (MethodDec) m;
 				
-				if (methodName.equals(castedMethod.getName())) {
+				if (castedMethod.isPublic() && methodName.equals(castedMethod.getName())) {
 					result = castedMethod;
 					break;
 				}

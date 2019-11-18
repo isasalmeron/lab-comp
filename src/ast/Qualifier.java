@@ -29,4 +29,8 @@ public class Qualifier {
 	public ArrayList<Token> getQualifiers() {
 		return this.qualifiers;
 	}
+	
+	public Boolean hasPublicQualifier() {
+		return qualifiers.contains(Token.PUBLIC);
+	}
 }
