@@ -1,17 +1,15 @@
 package ast;
 
-import lexer.Token;
-
 public abstract class MessageSendExpr extends Expr {
 	
-	Token receiverIdent; // self, super
+	String receiverIdent; // self, super, id
 
-	public MessageSendExpr(final Token receiverIdent) {
+	public MessageSendExpr(final String receiverIdent) {
 		this.receiverIdent = receiverIdent;
 	}
 	
 	@Override
 	public void genJava(PW pw) {
-		pw.print(receiverIdent.toString());
+		pw.print(receiverIdent);
 	}
 }

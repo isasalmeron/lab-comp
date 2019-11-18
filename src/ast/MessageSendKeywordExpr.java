@@ -6,12 +6,12 @@ import lexer.Token;
 
 public class MessageSendKeywordExpr extends MessageSendExpr {
 	
-	String methodName;
+	Member member;
 	List<Expr> argList;
 	
-	public MessageSendKeywordExpr(final Token receiver, final String methodName, final List<Expr> argList) {
+	public MessageSendKeywordExpr(final String receiver, final Member member, final List<Expr> argList) {
 		super(receiver);
-		this.methodName = methodName;
+		this.member = member;
 		this.argList = argList;
 	}
 	
@@ -22,7 +22,6 @@ public class MessageSendKeywordExpr extends MessageSendExpr {
 
 	@Override
 	public Type getType() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.member.getType();
 	}
 }

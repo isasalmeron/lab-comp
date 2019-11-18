@@ -914,21 +914,25 @@ public class Compiler {
 					messageName = lexer.getStringValue();
 					next();
 					
-					if (classDec.findMember(classDec, messageName) == null) {
-						error("Member '" + messageName + "' not found in class '" + classDec.getName() + "' or it's superclasses");
+					Member member = classDec.findMember(classDec, messageName);
+					
+					if (member == null) {
+						error("Member '" + messageName + "' not found in subclass '" + currentClass.getName() + "' or it's superclasses");
 					}
 					
-					//return new MessageSendUnaryExpr(messageName);
+					return new MessageSendUnaryExpr("super", member);
 				} else if (lexer.token == Token.IDCOLON) {
 					messageName = lexer.getStringValue();
 					next();
 					
-					if (classDec.findMember(classDec, messageName) == null) {
-						error("Member '" + messageName + "' not found in class '" + classDec.getName() + "' or it's superclasses");
+					Member member = classDec.findMember(classDec, messageName);
+					
+					if (member == null) {
+						error("Member '" + messageName + "' not found in subclass '" + currentClass.getName() + "' or it's superclasses");
 					}
 					
 					argList = exprList();
-					//return new MessageSendKeywordExpr(messageName, argList);
+					return new MessageSendKeywordExpr("super", member, argList);
 				} else {
 					error("An identifier was expected");
 				}
@@ -960,18 +964,19 @@ public class Compiler {
 						error("Class '" + messageName + "' not declared");
 					}
 					
-					Member member = classDec.findVariable(classDec, messageName);
+					Member member = classDec.findMember(classDec, messageName);
 					
 					if (member == null) {
-						member = (Member) symbolTable.getInLocal(messageName);
+						member = (Member) symbolTable.getInCurrentScope(messageName);
 						
-						if (member != null && !this.currentClass.getName().contentEquals(classDec.getName())) {
+						if (member == null) {
+							error("Member '" + messageName + "' not found in class '" + classDec.getName() + "' or it's superclasses");
+						} else if (!this.currentClass.getName().contentEquals(classDec.getName())) {
 							error("Member '" + messageName + "' not found in class '" + classDec.getName() + "' or it's superclasses");
 						}
 					}
 					
-					
-					//return new MessageSendUnaryExpr(messageName);
+					return new MessageSendUnaryExpr(receiverName, member);
 				} else if (lexer.token == Token.IDCOLON) {
 					String methodName = lexer.getStringValue();
 					next();
@@ -986,21 +991,21 @@ public class Compiler {
 						error("Class '" + messageName + "' not declared");
 					}
 					
-					MethodDec method = classDec.findMethod(classDec, methodName);
+					Member method = classDec.findMember(classDec, methodName);
 					
 					if (method == null) {
-						method = (MethodDec) symbolTable.getInClass(methodName);
+						method = (Member) symbolTable.getInClass(methodName);
 						
 						if (method == null) {
-							error("Method '" + methodName + "' not found in class '" + classDec.getName() + "'");
+							error("Method '" + methodName + "' not found in class '" + classDec.getName() + "' or it's superclasses");
 						} else if (!this.currentClass.getName().contentEquals(classDec.getName())) {
-							error("Method '" + methodName + "' not found in class '" + classDec.getName() + "'");
+							error("Method '" + methodName + "' not found in class '" + classDec.getName() + "' or it's superclasses");
 						}
 					}
 					
 					argList = exprList();
 					
-					//return new MessageSendKeywordExpr(messageName, argList);
+					return new MessageSendKeywordExpr(receiverName, method, argList);
 					
 				} else if (lexer.token == Token.NEW) {
 					next();
@@ -1031,6 +1036,62 @@ public class Compiler {
 				next();
 				
 				if (lexer.token == Token.ID) {
+					receiverName = lexer.getStringValue();
+					next();
+					
+					Member member = (Member) symbolTable.getInClass(receiverName);
+					
+					if (member == null) {
+						member = currentClass.findMember(currentClass, receiverName);
+					}
+					
+					if (member == null) {
+						error("Member '" + receiverName + "' not found");
+					}
+					
+					if (lexer.token == Token.DOT) {
+						next();
+						
+						if (lexer.token == Token.ID) {
+							messageName = lexer.getStringValue();
+							next();
+							
+							ClassDec classDec = (ClassDec) symbolTable.getInGlobal(member.getType().getName());
+							
+							member = (Member) symbolTable.getInClass(messageName);
+							
+							if (member == null) {
+								member = currentClass.findMember(classDec, messageName);
+							}
+							
+							if (member == null) {
+								error("Member '" + messageName + "' not found");
+							}
+							return new MessageSendUnaryToFieldExpr("self", receiverName, member);
+						} else if (lexer.token == Token.IDCOLON) {
+							messageName = lexer.getStringValue();
+							next();
+							
+							ClassDec classDec = (ClassDec) symbolTable.getInGlobal(member.getType().getName());
+							
+							member = (Member) symbolTable.getInClass(messageName);
+							
+							if (member == null) {
+								member = currentClass.findMember(classDec, messageName);
+							}
+							
+							if (member == null) {
+								error("Member '" + messageName + "' not found");
+							}
+							
+							argList = exprList();
+							
+							return new MessageSendKeywordToFieldExpr("self", receiverName, member, argList);
+						} else {
+							error("An identifier was expected");
+						}
+					}
+				} else if (lexer.token == Token.IDCOLON) {
 					messageName = lexer.getStringValue();
 					next();
 					
@@ -1044,24 +1105,9 @@ public class Compiler {
 						error("Member '" + messageName + "' not found");
 					}
 					
-					if (lexer.token == Token.DOT) {
-						next();
-						
-						if (lexer.token == Token.ID) {
-							next();
-							//return new MessageSendUnaryToFieldExpr();
-						} else if (lexer.token == Token.IDCOLON) {
-							next();
-							argList = exprList();
-							//return new MessageSendKeywordToFieldExpr();
-						} else {
-							error("An identifier was expected");
-						}
-					}
-				} else if (lexer.token == Token.IDCOLON) {
-					next();
 					argList = exprList();
-					//return new MessageSendKeywordExpr(messageName, argList);
+					
+					return new MessageSendKeywordExpr("self", member, argList);
 				} else {
 					error("An identifier was expected");
 				}
@@ -1072,7 +1118,7 @@ public class Compiler {
 			return readExpr();
 		}
 		
-		return null; // delete later
+		return null;
 	}
 
 

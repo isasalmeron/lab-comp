@@ -1,20 +1,20 @@
 package ast;
 
-import lexer.Token;
-
 public class MessageSendUnaryToFieldExpr extends Expr {
 	
-	ClassDec fieldReceiver;
-	Token unaryMessage;
+	String receiverIdent;
+	String middleFieldName;
+	Member fieldReceiver;
 	
-	public MessageSendUnaryToFieldExpr(final ClassDec fieldReceiver, final Token unaryMessage) {
+	public MessageSendUnaryToFieldExpr(final String receiverIdent, final String middleFieldName, final Member fieldReceiver) {
+		this.receiverIdent = receiverIdent;
+		this.middleFieldName = middleFieldName;
 		this.fieldReceiver = fieldReceiver;
-		this.unaryMessage = unaryMessage;
 	}
 
 	@Override
 	public Type getType() {
-		return fieldReceiver;
+		return this.fieldReceiver.getType();
 	}
 
 	@Override

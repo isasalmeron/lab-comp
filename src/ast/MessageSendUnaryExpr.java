@@ -5,15 +5,13 @@
 
 package ast;
 
-import lexer.Token;
-
 public class MessageSendUnaryExpr extends MessageSendExpr {
 	
-	String messageName;
+	Member message;
 	
-	public MessageSendUnaryExpr(final Token receiver, final String messageName) {
+	public MessageSendUnaryExpr(final String receiver, final Member message) {
 		super(receiver);
-		this.messageName = messageName;
+		this.message = message;
 	}
 	
 	@Override
@@ -23,7 +21,6 @@ public class MessageSendUnaryExpr extends MessageSendExpr {
 
 	@Override
 	public Type getType() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.message.getType();
 	}
 }

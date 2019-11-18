@@ -6,13 +6,16 @@ import lexer.Token;
 
 public class MessageSendKeywordToFieldExpr extends Expr {
 	
-	ClassDec fieldReceiver;
-	Token selector;
+	String receiverIdent;
+	String middleFieldName;
+	Member fieldReceiver;
 	List<Expr> argList;
 	
-	public MessageSendKeywordToFieldExpr(final ClassDec fieldReceiver, final Token selector, final List<Expr> argList) {
+	public MessageSendKeywordToFieldExpr(final String receiverIdent, final String middleFieldName,
+			final Member fieldReceiver, final List<Expr> argList) {
+		this.receiverIdent = receiverIdent;
+		this.middleFieldName = middleFieldName;
 		this.fieldReceiver = fieldReceiver;
-		this.selector = selector;
 		this.argList = argList;
 	}
 	
@@ -23,6 +26,6 @@ public class MessageSendKeywordToFieldExpr extends Expr {
 
 	@Override
 	public Type getType() {
-		return fieldReceiver;
+		return this.fieldReceiver.getType();
 	}
 }
