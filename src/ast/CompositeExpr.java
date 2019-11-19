@@ -48,6 +48,13 @@ public class CompositeExpr extends Expr {
 				return Type.booleanType;
 			}
 		}
+		
+		if (operator == Token.PLUSPLUS) {
+			if ((leftType == Type.intType || leftType == Type.stringType)
+					&& (rightType == Type.intType || rightType == Type.stringType)) {
+				return Type.stringType;
+			}
+		}
 
 		return Type.undefinedType;
 	}
