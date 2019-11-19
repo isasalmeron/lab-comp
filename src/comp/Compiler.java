@@ -201,10 +201,30 @@ public class Compiler {
 			error("'end' expected");
 		lexer.nextToken();
 		
+		if (classDec.getName().equals("Program")) {
+			if (!hasMethodRun(classDec)) {
+				error("Class 'Program' must have a 'run' method");
+			}
+		}
+		
 		symbolTable.clearClass();
 		
 		return classDec;
 
+	}
+	
+	private Boolean hasMethodRun(ClassDec classDec) {
+		Boolean hasMethodRun = false;
+		List<Member> classMembers = classDec.getMemberList();
+		
+		for (Member m : classMembers) {
+			if (m instanceof MethodDec && ((MethodDec) m).getName().equals("run")) {
+				hasMethodRun = true;
+				break;
+			}
+		}
+		
+		return hasMethodRun;
 	}
 
 	private List<Member> memberList() {
@@ -268,6 +288,12 @@ public class Compiler {
 		} else if (lexer.token == Token.ID) {
 			// unary method
 			lexer.nextToken();
+		}
+		
+		if (currentClass.getName().equals("Program")
+				&& methodName.equals("run:")
+				&& formalParamDec != null) {
+			error("Method 'run:' of class 'Program' cannot take parameters");
 		}
 		
 		if (lexer.token == Token.MINUS_GT) {
@@ -973,18 +999,23 @@ public class Compiler {
 					}
 					
 					return new MessageSendUnaryExpr("super", member);
+					
 				} else if (lexer.token == Token.IDCOLON) {
 					messageName = lexer.getStringValue();
 					next();
 					
-					Member member = classDec.findMember(classDec, messageName);
+					MethodDec method = classDec.findMethod(classDec, messageName);
 					
-					if (member == null) {
-						error("Member '" + messageName + "' not found in subclass '" + currentClass.getName() + "' or it's superclasses");
+					if (method == null) {
+						error("Method '" + messageName + "' not found in subclass '" + currentClass.getName() + "' or it's superclasses");
 					}
 					
 					argList = exprList();
-					return new MessageSendKeywordExpr("super", member, argList);
+					
+					checkParams(method, argList);
+					
+					return new MessageSendKeywordExpr("super", method, argList);
+					
 				} else {
 					error("An identifier was expected");
 				}
@@ -1029,6 +1060,7 @@ public class Compiler {
 					}
 					
 					return new MessageSendUnaryExpr(receiverName, member);
+					
 				} else if (lexer.token == Token.IDCOLON) {
 					String memberName = lexer.getStringValue();
 					next();
@@ -1043,32 +1075,23 @@ public class Compiler {
 						error("Class '" + messageName + "' not declared");
 					}
 					
-					MethodDec member = (MethodDec) classDec.findMember(classDec, memberName);
+					MethodDec method = classDec.findMethod(classDec, memberName);
 					
-					if (member == null) {
-						member = (MethodDec) symbolTable.getInClass(memberName);
+					if (method == null) {
+						method = (MethodDec) symbolTable.getInClass(memberName);
 						
-						if (member == null) {
-							error("Member '" + memberName + "' not found in class '" + classDec.getName() + "' or it's superclasses");
+						if (method == null) {
+							error("Method '" + memberName + "' not found in class '" + classDec.getName() + "' or it's superclasses");
 						} else if (!this.currentClass.getName().contentEquals(classDec.getName())) {
-							error("Member '" + memberName + "' not found in class '" + classDec.getName() + "' or it's superclasses");
+							error("Method '" + memberName + "' not found in class '" + classDec.getName() + "' or it's superclasses");
 						}
 					}
 					
 					argList = exprList();
-					List<Variable> methodParams = member.getParams();
 					
-					if (argList.size() != methodParams.size()) {
-						error("Wrong number of params in method '" + member.getName() + "'");
-					}
+					checkParams(method, argList);
 					
-					for (int i = 0; i < argList.size(); i++) {
-						if (!isTypeValid(methodParams.get(i).getType(), argList.get(i).getType())) {
-							error("Wrong parameter type in method '" + member.getName() + "'");
-						}
-					}
-					
-					return new MessageSendKeywordExpr(receiverName, member, argList);
+					return new MessageSendKeywordExpr(receiverName, method, argList);
 					
 				} else if (lexer.token == Token.NEW) {
 					next();
@@ -1137,19 +1160,22 @@ public class Compiler {
 							
 							ClassDec classDec = (ClassDec) symbolTable.getInGlobal(member.getType().getName());
 							
-							member = (Member) symbolTable.getInClass(messageName);
+							MethodDec method = (MethodDec) symbolTable.getInClass(messageName);
 							
-							if (member == null) {
-								member = currentClass.findMember(classDec, messageName);
+							if (method == null) {
+								method = currentClass.findMethod(classDec, messageName);
 							}
 							
-							if (member == null) {
-								error("Member '" + messageName + "' not found");
+							if (method == null) {
+								error("Method '" + messageName + "' not found");
 							}
 							
 							argList = exprList();
 							
-							return new MessageSendKeywordToFieldExpr("self", receiverName, member, argList);
+							checkParams(method, argList);
+							
+							return new MessageSendKeywordToFieldExpr("self", receiverName, method, argList);
+							
 						} else {
 							error("An identifier was expected");
 						}
@@ -1159,30 +1185,22 @@ public class Compiler {
 					messageName = lexer.getStringValue();
 					next();
 					
-					MethodDec member = (MethodDec) symbolTable.getInClass(messageName);
+					MethodDec method = (MethodDec) symbolTable.getInClass(messageName);
 					
-					if (member == null) {
-						member = (MethodDec) currentClass.findMember(currentClass, messageName);
+					if (method == null) {
+						method = (MethodDec) currentClass.findMember(currentClass, messageName);
 					}
 					
-					if (member == null) {
-						error("Member '" + messageName + "' not found");
+					if (method == null) {
+						error("Method '" + messageName + "' not found");
 					}
 					
 					argList = exprList();
-					List<Variable> methodParams = member.getParams();
 					
-					if (argList.size() != methodParams.size()) {
-						error("Wrong number of params in method '" + member.getName() + "'");
-					}
+					checkParams(method, argList);
 					
-					for (int i = 0; i < argList.size(); i++) {
-						if (!isTypeValid(methodParams.get(i).getType(), argList.get(i).getType())) {
-							error("Wrong parameter type in method '" + member.getName() + "'");
-						}
-					}
+					return new MessageSendKeywordExpr("self", method, argList);
 					
-					return new MessageSendKeywordExpr("self", member, argList);
 				} else {
 					error("An identifier was expected");
 				}
@@ -1194,6 +1212,20 @@ public class Compiler {
 		}
 		
 		return null;
+	}
+	
+	private void checkParams(MethodDec method, List<Expr> argList) {
+		List<Variable> methodParams = method.getParams();
+		
+		if (argList.size() != methodParams.size()) {
+			error("Wrong number of params in method '" + method.getName() + "'");
+		}
+		
+		for (int i = 0; i < argList.size(); i++) {
+			if (!isTypeValid(methodParams.get(i).getType(), argList.get(i).getType())) {
+				error("Wrong parameter type in method '" + method.getName() + "'");
+			}
+		}
 	}
 
 

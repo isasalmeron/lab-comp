@@ -2,8 +2,8 @@ Relatório do Compilador
 
 Resumo
 _________________________________________________________________________
-MI:  8             I: 2              PI: 11            Exc: 0
-Dev: 23/142/16%    LE: 9/142/6%      SSE: 2/41/4%      
+MI:  8             I: 2              PI: 9             Exc: 0
+Dev: 21/142/14%    LE: 9/142/6%      SSE: 2/41/4%      
 
 MI = muito importante, I = importante, PI = pouco importante, Exc = exceções
 Dev = deveria ter sinalizado, LE = sinalizou linha errada, SSE = sinalizado sem erro
@@ -11,7 +11,7 @@ _________________________________________________________________________
 
 Número de testes 'Muito importantes' em que o compilador falhou: 8
 Número de testes 'Importantes' em que o compilador falhou: 2
-Número de testes 'Pouco importantes' em que o compilador falhou: 11
+Número de testes 'Pouco importantes' em que o compilador falhou: 9
 
 O compilador falhou em testar alguns aspectos (construções) de Cianeto. A lista abaixo consiste de entradas da forma 
     aspecto
@@ -42,10 +42,6 @@ Testes 'importantes' em que o compilador falhou:
 
 
 Testes 'pouco importantes' em que o compilador falhou
-    parametersInMethodRunOfClassProgram
-        ER_SEM79.ci
-        ER_SEM82.ci
-
     missingClassProgram
         ER_SEM78.ci
 
@@ -213,6 +209,10 @@ Testes 'pouco importantes' em que o compilador acertou
     openAsIdentifier
         OK_SEM11.ci
 
+    parametersInMethodRunOfClassProgram
+        ER_SEM79.ci
+        ER_SEM82.ci
+
     classExtendsItself
         ER_SEM27.ci
 
@@ -237,7 +237,7 @@ Testes 'pouco importantes' em que o compilador acertou
 
 _________________________________________________________________________
 
-23 de um total de 142 erros que deveriam ser sinalizados não o foram (16%)
+21 de um total de 142 erros que deveriam ser sinalizados não o foram (14%)
 9 erros foram sinalizados na linha errada (6%)
 2 erros foram sinalizados em 41 arquivos sem erro (4%)
 _________________________________________________________________________
@@ -260,8 +260,6 @@ ER_SEM51.ci, 21, Method 'put' is being redefined in subclass 'B' with a signatur
 
 ER_SEM01.ci, 18, Missing 'return' statement in method 'm' (comp.Compiler.methodDec())
 
-ER_SEM79.ci, 13, Method 'run:' of class 'Program' cannot take parameters (comp.Compiler.classDec())
-
 ER_SEM54.ci, 13, 'override' expected before overridden method
 
 ER_SEM30.ci, 24, Method 'put' of subclass 'B' has a signature different from method inherited from superclass 'A' (comp.Compiler.methodDec())
@@ -281,8 +279,6 @@ ER_SEM26.ci, 15, 'break' statement found outside a 'while' or 'repeat-until' sta
 ER_SEM52.ci, 12, 'override' expected before overridden method
 
 ER_SIN40.ci, 12, Attempt to declare public instance variable 'i' (comp.Compiler.classDec())
-
-ER_SEM77.ci, 16, Method 'run' was not found in class 'Program' (comp.Compiler.classDec())
 
 ER_SIN37.ci, 13, Expression expected (comp.Compiler.factor())
 
@@ -309,13 +305,13 @@ ER_SIN17.ci
     correto:    9, Missing ';' (comp.Compiler.localDec())
     sinalizado: 11, ';' expected
 
-ER_SEM82.ci
-    correto:    13,  
-    sinalizado: 15, Local variable 'numero' already declared
-
 ER_SIN22.ci
     correto:    10, ';' missing 
     sinalizado: 11, ';' expected
+
+ER_SEM77.ci
+    correto:    16, Method 'run' was not found in class 'Program' (comp.Compiler.classDec())
+    sinalizado: 17, Class 'Program' must have a 'run' method
 
 ER_SEM29.ci
     correto:    22, Method 'put' of the subclass 'B' has a signature different from the same method of superclass 'A' (comp.Compiler.methodDec() or comp.Compiler.classDec())
@@ -467,7 +463,7 @@ The 'cep' message is:      ""
 
 
 ER_SEM_EXTRA02.ci
-The compiler message was: "Member 'se:' not found in class 'B' or it's superclasses"
+The compiler message was: "Method 'se:' not found in class 'B' or it's superclasses"
 The 'cep' message is:      ""
 
 
@@ -564,6 +560,11 @@ The 'cep' message is:      "Variable 'i' is being redeclared"
 ER_SEM14.ci
 The compiler message was: "Attempt to print a 'boolean' expression"
 The 'cep' message is:      "Attempt to print a boolean expression"
+
+
+ER_SEM79.ci
+The compiler message was: "Method 'run:' of class 'Program' cannot take parameters"
+The 'cep' message is:      "Method 'run:' of class 'Program' cannot take parameters"
 
 
 ER_SIN06.ci
@@ -682,7 +683,7 @@ The 'cep' message is:      "operator '+' of 'Int' expects an 'Int' value"
 
 
 ER_SEM71.ci
-The compiler message was: "Member 'set:' not found in class 'A' or it's superclasses"
+The compiler message was: "Method 'set:' not found in class 'A' or it's superclasses"
 The 'cep' message is:      "Method 'set:' was not found in class 'A' or its superclasses"
 
 
@@ -719,6 +720,11 @@ The 'cep' message is:      "'{' expected"
 ER_LEX01.ci
 The compiler message was: "Class 'Integer' does not exist"
 The 'cep' message is:      "type 'Integer' not recognized"
+
+
+ER_SEM82.ci
+The compiler message was: "Method 'run:' of class 'Program' cannot take parameters"
+The 'cep' message is:      ""
 
 
 ER_SEM31.ci
@@ -772,7 +778,7 @@ The 'cep' message is:      "Command 'write' does not accept objects"
 
 
 ER_SEM37.ci
-The compiler message was: "Member 'set:' not found in class 'A' or it's superclasses"
+The compiler message was: "Method 'set:' not found in class 'A' or it's superclasses"
 The 'cep' message is:      "Method 'set' was not found in class 'A' or its superclasses"
 
 
