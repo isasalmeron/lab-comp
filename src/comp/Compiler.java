@@ -416,6 +416,10 @@ public class Compiler {
 		
 		Expr expr = expr();
 		
+		if (expr.getType() != Type.booleanType) {
+			error("Boolean expression expected in a repeat-until statement");
+		}
+		
 		return new RepeatStat(stmtList, expr);
 	}
 
@@ -432,6 +436,10 @@ public class Compiler {
 		}
 		
 		Expr expr = expr();
+		
+		if (currentMethod.getReturnType() != expr.getType()) {
+			error("Wrong return type");
+		}
 		
 		return new ReturnStat(expr);
 	}
@@ -508,8 +516,8 @@ public class Compiler {
 		exprList.add(expr());
 		
 		for (Expr e : exprList) {
-			if (e.getType() == Type.booleanType) {
-				error("Attempt to print a 'Boolean' expression");
+			if (e.getType() != Type.stringType && e.getType() != Type.intType) {
+				error("Attempt to print a '" + e.getType().getName() + "' expression");
 			}
 		}
 		
@@ -716,13 +724,34 @@ public class Compiler {
 		}
 		
 		if (first instanceof TypeCianetoClass) {
-			if (second == Type.nilType || second == Type.undefinedType || second.getName().equals(first.getName())) {
+			if (second == Type.nilType || second == Type.undefinedType) {
+				return true;
+			} else if (second instanceof TypeCianetoClass
+					&& (second.getName().equals(first.getName())
+							|| isSubclass(first.getName(), second.getName()))) {
 				return true;
 			}
 			return false;
 		}	
 		
 		return false;
+	}
+	
+	private Boolean isSubclass(String parentType, String subclassType) {
+		ClassDec parent = (ClassDec) symbolTable.getInGlobal(parentType);
+		ClassDec sub = (ClassDec) symbolTable.getInGlobal(subclassType);
+		Boolean isSubclass = false;
+		ClassDec superClass = sub.getSuperclass();
+		
+		while (superClass != null) {
+			if (parent.getName().equals(superClass.getName())) {
+				isSubclass = true;
+				break;
+			}
+			superClass = superClass.getSuperclass();
+		}
+		
+		return isSubclass;		
 	}
 
 	private Expr basicValue() {
