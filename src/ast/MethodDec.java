@@ -74,7 +74,6 @@ public class MethodDec extends Member {
 
 	@Override
 	public Type getType() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.returnType;
 	}
 }

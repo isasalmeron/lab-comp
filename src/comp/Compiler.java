@@ -693,9 +693,36 @@ public class Compiler {
 			operator = lexer.token;
 			next();
 			right = expr();
+			
+			if (!isAssignTypeValid(left.getType(), right.getType())) {
+				error("Cannot assign expressions of different types");
+			}
 		}
 		
 		return new CompositeExpr(left, operator, right);
+	}
+	
+	private Boolean isAssignTypeValid(Type first, Type second) {
+		if (first == null || second == null) {
+			return false;
+		}
+		
+		if ((first == Type.intType || first == Type.booleanType || first == Type.stringType) && first == second) {
+			return true;
+		}
+		
+		if ((first == Type.cianetoClassType || first == Type.stringType) && second == Type.nilType) {
+			return true;
+		}
+		
+		if (first instanceof TypeCianetoClass) {
+			if (second == Type.nilType || second == Type.undefinedType || second.getName().equals(first.getName())) {
+				return true;
+			}
+			return false;
+		}	
+		
+		return false;
 	}
 
 	private Expr basicValue() {
@@ -788,11 +815,7 @@ public class Compiler {
 				error("Operator '" + operator.toString() + "' does not support 'Boolean' type");
 			}
 			
-			if (left.getType() != right.getType()) {
-				
-			}
-			
-			left = new CompositeExpr(left, operator, term());
+			left = new CompositeExpr(left, operator, right);
 		}
 		
 		return left;
@@ -978,7 +1001,7 @@ public class Compiler {
 					
 					return new MessageSendUnaryExpr(receiverName, member);
 				} else if (lexer.token == Token.IDCOLON) {
-					String methodName = lexer.getStringValue();
+					String memberName = lexer.getStringValue();
 					next();
 					
 					if (variable == null) {
@@ -991,21 +1014,21 @@ public class Compiler {
 						error("Class '" + messageName + "' not declared");
 					}
 					
-					Member method = classDec.findMember(classDec, methodName);
+					Member member = classDec.findMember(classDec, memberName);
 					
-					if (method == null) {
-						method = (Member) symbolTable.getInClass(methodName);
+					if (member == null) {
+						member = (Member) symbolTable.getInClass(memberName);
 						
-						if (method == null) {
-							error("Method '" + methodName + "' not found in class '" + classDec.getName() + "' or it's superclasses");
+						if (member == null) {
+							error("Member '" + memberName + "' not found in class '" + classDec.getName() + "' or it's superclasses");
 						} else if (!this.currentClass.getName().contentEquals(classDec.getName())) {
-							error("Method '" + methodName + "' not found in class '" + classDec.getName() + "' or it's superclasses");
+							error("Member '" + memberName + "' not found in class '" + classDec.getName() + "' or it's superclasses");
 						}
 					}
 					
 					argList = exprList();
 					
-					return new MessageSendKeywordExpr(receiverName, method, argList);
+					return new MessageSendKeywordExpr(receiverName, member, argList);
 					
 				} else if (lexer.token == Token.NEW) {
 					next();
@@ -1091,6 +1114,7 @@ public class Compiler {
 							error("An identifier was expected");
 						}
 					}
+					return new MessageSendUnaryExpr("self", member);
 				} else if (lexer.token == Token.IDCOLON) {
 					messageName = lexer.getStringValue();
 					next();

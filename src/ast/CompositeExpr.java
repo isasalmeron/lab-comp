@@ -36,6 +36,18 @@ public class CompositeExpr extends Expr {
 				return Type.booleanType;
 			}
 		}
+		
+		if (operator == Token.PLUS || operator == Token.MINUS || operator == Token.MULT || operator == Token.DIV) {
+			if (leftType == Type.intType && rightType == Type.intType) {
+				return Type.intType;
+			}
+		}
+		
+		if (operator == Token.OR || operator == Token.AND) {
+			if (leftType == Type.booleanType && leftType == rightType) {
+				return Type.booleanType;
+			}
+		}
 
 		return Type.undefinedType;
 	}

@@ -7,10 +7,12 @@ package ast;
 
 public class MessageSendUnaryExpr extends MessageSendExpr {
 	
+	String receiver;
 	Member message;
 	
 	public MessageSendUnaryExpr(final String receiver, final Member message) {
 		super(receiver);
+		this.receiver = receiver;
 		this.message = message;
 	}
 	

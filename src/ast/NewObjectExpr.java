@@ -21,7 +21,6 @@ public class NewObjectExpr extends Expr {
 
 	@Override
 	public Type getType() {
-		// TODO Auto-generated method stub
-		return null;
+		return new TypeCianetoClass(aClass.getName());
 	}
 }
