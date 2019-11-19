@@ -437,8 +437,8 @@ public class Compiler {
 		
 		Expr expr = expr();
 		
-		if (currentMethod.getReturnType() != expr.getType()) {
-			error("Wrong return type");
+		if (!isTypeValid(currentMethod.getReturnType(), expr.getType())) {
+			error("Wrong return type in method '" + currentMethod.getName() + "'");
 		}
 		
 		return new ReturnStat(expr);
@@ -702,7 +702,7 @@ public class Compiler {
 			next();
 			right = expr();
 			
-			if (!isAssignTypeValid(left.getType(), right.getType())) {
+			if (!isTypeValid(left.getType(), right.getType())) {
 				error("Cannot assign expressions of different types");
 			}
 		}
@@ -710,7 +710,7 @@ public class Compiler {
 		return new CompositeExpr(left, operator, right);
 	}
 	
-	private Boolean isAssignTypeValid(Type first, Type second) {
+	private Boolean isTypeValid(Type first, Type second) {
 		if (first == null || second == null) {
 			return false;
 		}
@@ -1043,10 +1043,10 @@ public class Compiler {
 						error("Class '" + messageName + "' not declared");
 					}
 					
-					Member member = classDec.findMember(classDec, memberName);
+					MethodDec member = (MethodDec) classDec.findMember(classDec, memberName);
 					
 					if (member == null) {
-						member = (Member) symbolTable.getInClass(memberName);
+						member = (MethodDec) symbolTable.getInClass(memberName);
 						
 						if (member == null) {
 							error("Member '" + memberName + "' not found in class '" + classDec.getName() + "' or it's superclasses");
@@ -1056,6 +1056,17 @@ public class Compiler {
 					}
 					
 					argList = exprList();
+					List<Variable> methodParams = member.getParams();
+					
+					if (argList.size() != methodParams.size()) {
+						error("Wrong number of params in method '" + member.getName() + "'");
+					}
+					
+					for (int i = 0; i < argList.size(); i++) {
+						if (!isTypeValid(methodParams.get(i).getType(), argList.get(i).getType())) {
+							error("Wrong parameter type in method '" + member.getName() + "'");
+						}
+					}
 					
 					return new MessageSendKeywordExpr(receiverName, member, argList);
 					
@@ -1148,10 +1159,10 @@ public class Compiler {
 					messageName = lexer.getStringValue();
 					next();
 					
-					Member member = (Member) symbolTable.getInClass(messageName);
+					MethodDec member = (MethodDec) symbolTable.getInClass(messageName);
 					
 					if (member == null) {
-						member = currentClass.findMember(currentClass, messageName);
+						member = (MethodDec) currentClass.findMember(currentClass, messageName);
 					}
 					
 					if (member == null) {
@@ -1159,6 +1170,17 @@ public class Compiler {
 					}
 					
 					argList = exprList();
+					List<Variable> methodParams = member.getParams();
+					
+					if (argList.size() != methodParams.size()) {
+						error("Wrong number of params in method '" + member.getName() + "'");
+					}
+					
+					for (int i = 0; i < argList.size(); i++) {
+						if (!isTypeValid(methodParams.get(i).getType(), argList.get(i).getType())) {
+							error("Wrong parameter type in method '" + member.getName() + "'");
+						}
+					}
 					
 					return new MessageSendKeywordExpr("self", member, argList);
 				} else {

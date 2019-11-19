@@ -56,6 +56,10 @@ public class MethodDec extends Member {
     	return this.returnType;
     }
     
+    public List<Variable> getParams() {
+    	return this.formalParamDec;
+    }
+    
     public void setStmtList(List<Statement> stmtList) {
     	this.stmtList = stmtList;
     }
