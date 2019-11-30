@@ -2,14 +2,14 @@ Relatório do Compilador
 
 Resumo
 _________________________________________________________________________
-MI:  5             I: 2              PI: 9             Exc: 0
-Dev: 18/142/12%    LE: 9/142/6%      SSE: 2/41/4%      
+MI:  3             I: 2              PI: 9             Exc: 0
+Dev: 16/142/11%    LE: 9/142/6%      SSE: 2/41/4%      
 
 MI = muito importante, I = importante, PI = pouco importante, Exc = exceções
 Dev = deveria ter sinalizado, LE = sinalizou linha errada, SSE = sinalizado sem erro
 _________________________________________________________________________
 
-Número de testes 'Muito importantes' em que o compilador falhou: 5
+Número de testes 'Muito importantes' em que o compilador falhou: 3
 Número de testes 'Importantes' em que o compilador falhou: 2
 Número de testes 'Pouco importantes' em que o compilador falhou: 9
 
@@ -24,10 +24,6 @@ Testes 'Muito importantes' em que o compilador falhou:
         ER_SEM51.ci
         ER_SEM30.ci
         ER_SEM29.ci
-
-    typeErrorEqualEqualNotEqual
-        ER_SEM58.ci
-        ER_SEM57.ci
 
 
 Testes 'importantes' em que o compilador falhou:
@@ -134,8 +130,10 @@ Testes 'Muito importantes' em que o compilador acertou:
         ER_SEM70.ci
 
     typeErrorEqualEqualNotEqual
+        ER_SEM58.ci
         OK_SEM04.ci
         OK_SEM03.ci
+        ER_SEM57.ci
 
     supertypeAssignSelf
         OK_SEM15.ci
@@ -237,14 +235,12 @@ Testes 'pouco importantes' em que o compilador acertou
 
 _________________________________________________________________________
 
-18 de um total de 142 erros que deveriam ser sinalizados não o foram (12%)
+16 de um total de 142 erros que deveriam ser sinalizados não o foram (11%)
 9 erros foram sinalizados na linha errada (6%)
 2 erros foram sinalizados em 41 arquivos sem erro (4%)
 _________________________________________________________________________
 
 Erros que deveriam ser sinalizados mas não foram:
-
-ER_SEM58.ci, 26, Incompatible types cannot be compared with '!=' because the result will always be 'false' (comp.Compiler.expr())
 
 ER_SIN100.ci, 10, missing 'return' statement
 
@@ -277,8 +273,6 @@ ER_SIN40.ci, 12, Attempt to declare public instance variable 'i' (comp.Compiler.
 ER_SIN37.ci, 13, Expression expected (comp.Compiler.factor())
 
 ER_SIN44.ci, 16, Attempt to declare public instance variable 'i' (comp.Compiler.classDec())
-
-ER_SEM57.ci, 26, Incompatible types cannot be compared with '==' because the results will always be 'false' (comp.Compiler.expr())
 
 ######################################################
 Erros que foram sinalizados na linha errada:
@@ -359,6 +353,11 @@ The 'cep' message is:      "Operator '-' does not accepts 'boolean' expressions"
 ER_SIN62.ci
 The compiler message was: "missing keyword 'until'"
 The 'cep' message is:      "'}' not expected before 'until'"
+
+
+ER_SEM58.ci
+The compiler message was: "Incompatible types cannot be compared with '!='"
+The 'cep' message is:      "Incompatible types cannot be compared with '!=' because the result will always be 'false'"
 
 
 ER_SEM_EXTRA01.ci
@@ -899,6 +898,11 @@ The 'cep' message is:      "Identifier expected"
 ER_SEM03.ci
 The compiler message was: "Local variable 'i' already declared"
 The 'cep' message is:      "Variable 'i' is being redeclared"
+
+
+ER_SEM57.ci
+The compiler message was: "Incompatible types cannot be compared with '=='"
+The 'cep' message is:      "Incompatible types cannot be compared with '==' because the results will always be 'false'"
 
 
 ER_SIN35.ci

@@ -561,7 +561,7 @@ public class Compiler {
 	}
 
 	private Expr expr() {
-		Expr expr = simpleExpression();
+		Expr right = simpleExpression();
 		
 		if (lexer.token == Token.EQ
 				|| lexer.token == Token.LT
@@ -571,10 +571,49 @@ public class Compiler {
 				|| lexer.token == Token.NEQ) {
 			Token operator = lexer.token;
 			next();
-			expr = new CompositeExpr(expr, operator, simpleExpression());
+			Expr left = simpleExpression();
+			
+			if ((operator == Token.EQ || operator == Token.NEQ)
+					&& !isValidComparation(right.getType(), left.getType())) {
+				error("Incompatible types cannot be compared with '" + operator + "'");
+			}
+			
+			right = new CompositeExpr(right, operator, left);
 		}
 
-		return expr;
+		return right;
+	}
+	
+	private Boolean isValidComparation(Type first, Type second) {
+		if (first == null || second == null) {
+			return false;
+		}
+		
+		if ((first == Type.intType || first == Type.booleanType || first == Type.stringType) && first == second) {
+			return true;
+		}
+		
+		if ((first == Type.cianetoClassType || first == Type.stringType) && second == Type.nilType) {
+			return true;
+		}
+		
+		if ((second == Type.cianetoClassType || second == Type.stringType) && first == Type.nilType) {
+			return true;
+		}
+		
+		if (first instanceof TypeCianetoClass) {
+			if (second == Type.nilType || second == Type.undefinedType) {
+				return true;
+			} else if (second instanceof TypeCianetoClass
+					&& (second.getName().equals(first.getName())
+							|| isSubclass(first.getName(), second.getName())
+							|| isSubclass(second.getName(), first.getName()))) {
+				return true;
+			}
+			return false;
+		}	
+		
+		return false;
 	}
 
 	private FieldDec fieldDec(Qualifier qualifier) {
