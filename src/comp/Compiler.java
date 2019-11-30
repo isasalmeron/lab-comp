@@ -277,6 +277,11 @@ public class Compiler {
 		List<Variable> formalParamDec = null;
 		Type returnType = null;
 		
+		if (currentClass.findMethodInSuper(methodName) != null
+				&& qualifier != null && !qualifier.getQualifiers().contains(Token.OVERRIDE)) {
+			error("Overriden method '" + methodName + "' should be preceded by 'override'");
+		}
+		
 		if (symbolTable.getInClass(methodName) != null) {
 			error("Method '" + methodName + "' already declared in this scope");
 		}
