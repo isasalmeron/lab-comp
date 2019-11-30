@@ -2,29 +2,22 @@ Relatório do Compilador
 
 Resumo
 _________________________________________________________________________
-MI:  3             I: 2              PI: 9             Exc: 0
-Dev: 16/142/11%    LE: 9/142/6%      SSE: 2/41/4%      
+MI:  0             I: 2              PI: 8             Exc: 0
+Dev: 14/142/9%     LE: 7/142/4%      SSE: 2/41/4%      
 
 MI = muito importante, I = importante, PI = pouco importante, Exc = exceções
 Dev = deveria ter sinalizado, LE = sinalizou linha errada, SSE = sinalizado sem erro
 _________________________________________________________________________
 
-Número de testes 'Muito importantes' em que o compilador falhou: 3
+Número de testes 'Muito importantes' em que o compilador falhou: 0
 Número de testes 'Importantes' em que o compilador falhou: 2
-Número de testes 'Pouco importantes' em que o compilador falhou: 9
+Número de testes 'Pouco importantes' em que o compilador falhou: 8
 
 O compilador falhou em testar alguns aspectos (construções) de Cianeto. A lista abaixo consiste de entradas da forma 
     aspecto
         listas de nomes de arquivos
 Os nomes de arquivos listados são aqueles que testam 'aspecto' mas em que o compilador falhou em apontar um erro, apontou um erro inexistente ou gerou código errado (se opção -genjava ou -genc foi usada).
 Os testes são categorizados por importância: 'Muito importante', 'Importante', 'pouco importante'
-
-Testes 'Muito importantes' em que o compilador falhou:
-    wrongSubclassMethodSignature
-        ER_SEM51.ci
-        ER_SEM30.ci
-        ER_SEM29.ci
-
 
 Testes 'importantes' em que o compilador falhou:
     breakOutsideWhileRepeatUntil
@@ -35,9 +28,6 @@ Testes 'importantes' em que o compilador falhou:
 Testes 'pouco importantes' em que o compilador falhou
     missingClassProgram
         ER_SEM78.ci
-
-    missingRunMethodInProgram
-        ER_SEM77.ci
 
     exprRightHandSideAssignment
         ER_SEM06.ci
@@ -121,6 +111,11 @@ Testes 'Muito importantes' em que o compilador acertou:
 
     localVarRedeclared
         ER_SEM28.ci
+
+    wrongSubclassMethodSignature
+        ER_SEM51.ci
+        ER_SEM30.ci
+        ER_SEM29.ci
 
     typeNotFound
         ER_SEM19.ci
@@ -211,6 +206,9 @@ Testes 'pouco importantes' em que o compilador acertou
         ER_SEM79.ci
         ER_SEM82.ci
 
+    missingRunMethodInProgram
+        ER_SEM77.ci
+
     classExtendsItself
         ER_SEM27.ci
 
@@ -235,8 +233,8 @@ Testes 'pouco importantes' em que o compilador acertou
 
 _________________________________________________________________________
 
-16 de um total de 142 erros que deveriam ser sinalizados não o foram (11%)
-9 erros foram sinalizados na linha errada (6%)
+14 de um total de 142 erros que deveriam ser sinalizados não o foram (9%)
+7 erros foram sinalizados na linha errada (4%)
 2 erros foram sinalizados em 41 arquivos sem erro (4%)
 _________________________________________________________________________
 
@@ -250,11 +248,7 @@ ER_SEM34.ci, 24, Message send 'a.m()' returns a value that is not used (comp.Com
 
 ER_SIN02.ci, 7, Missing identifier (comp.Compiler.localDec())
 
-ER_SEM51.ci, 21, Method 'put' is being redefined in subclass 'B' with a signature different from the method of superclass 'A' (comp.Compiler.methodDec())
-
 ER_SEM01.ci, 18, Missing 'return' statement in method 'm' (comp.Compiler.methodDec())
-
-ER_SEM30.ci, 24, Method 'put' of subclass 'B' has a signature different from method inherited from superclass 'A' (comp.Compiler.methodDec())
 
 ER_SEM06.ci, 12, 'operator expected' or 'variable expected at the left-hand side of a assignment'
 
@@ -296,14 +290,6 @@ ER_SIN17.ci
 ER_SIN22.ci
     correto:    10, ';' missing 
     sinalizado: 11, ';' expected
-
-ER_SEM77.ci
-    correto:    16, Method 'run' was not found in class 'Program' (comp.Compiler.classDec())
-    sinalizado: 17, Class 'Program' must have a 'run' method
-
-ER_SEM29.ci
-    correto:    22, Method 'put' of the subclass 'B' has a signature different from the same method of superclass 'A' (comp.Compiler.methodDec() or comp.Compiler.classDec())
-    sinalizado: 33, Member 'put' not found in class 'A' or it's superclasses
 
 ER_SIN20.ci
     correto:    6, ';' missing 
@@ -426,7 +412,7 @@ The 'cep' message is:      ""
 
 
 ER_SIN57.ci
-The compiler message was: "'end' expected"
+The compiler message was: "Class 'Program' must have a 'run' method"
 The 'cep' message is:      "'public', 'private' or '}' expected"
 
 
@@ -520,6 +506,11 @@ The compiler message was: "Variable 'this' not declared"
 The 'cep' message is:      "token 'this' not recognized"
 
 
+ER_SEM51.ci
+The compiler message was: "Method 'put:' being overriden in superclass has a different signature"
+The 'cep' message is:      "Method 'put' is being redefined in subclass 'B' with a signature different from the method of superclass 'A'"
+
+
 ER_SEM08.ci
 The compiler message was: "Operator '-' does not support 'Boolean' type"
 The 'cep' message is:      "type boolean does not support operation '+'"
@@ -591,7 +582,7 @@ The 'cep' message is:      "'override' expected before overridden method"
 
 
 ER_SIN43.ci
-The compiler message was: "'end' expected"
+The compiler message was: "Class 'Program' must have a 'run' method"
 The 'cep' message is:      "function or field declaration expected"
 
 
@@ -631,7 +622,7 @@ The 'cep' message is:      "Expression expected OR Unknown sequence of symbols"
 
 
 ER_SIN31.ci
-The compiler message was: "'end' expected"
+The compiler message was: "Class 'Program' must have a 'run' method"
 The 'cep' message is:      "'public', 'private', or '}' expected"
 
 
@@ -668,6 +659,11 @@ The 'cep' message is:      "')' expected"
 ER_SIN25.ci
 The compiler message was: "'{' expected after the 'if' expression"
 The 'cep' message is:      "Expression expected OR invalid sequence of symbols"
+
+
+ER_SEM30.ci
+The compiler message was: "Method 'put' being overriden in superclass has a different signature"
+The 'cep' message is:      "Method 'put' of subclass 'B' has a signature different from method inherited from superclass 'A'"
 
 
 ER_SEM55.ci
@@ -805,6 +801,11 @@ The compiler message was: "A variable name was expected"
 The 'cep' message is:      "Identifier expected"
 
 
+ER_SEM77.ci
+The compiler message was: "Class 'Program' must have a 'run' method"
+The 'cep' message is:      "Method 'run' was not found in class 'Program'"
+
+
 ER_SIN23.ci
 The compiler message was: "';' expected"
 The 'cep' message is:      "Statement expected"
@@ -828,6 +829,11 @@ The 'cep' message is:      "Identifier 'run' was not declared"
 ER_SIN10.ci
 The compiler message was: "Member 'a' not declared"
 The 'cep' message is:      "'readInt' was not declared"
+
+
+ER_SEM29.ci
+The compiler message was: "Method 'put:' being overriden in superclass has a different signature"
+The 'cep' message is:      "Method 'put' of the subclass 'B' has a signature different from the same method of superclass 'A'"
 
 
 ER_SEM62.ci

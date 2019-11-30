@@ -6,7 +6,9 @@
 package ast;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import lexer.Token;
 
@@ -14,7 +16,7 @@ public class MethodDec extends Member {
 	
 	private Qualifier qualifier;
 	private String name;
-	private List<Variable> formalParamDec;
+	private List<Variable> formalParamDec = new ArrayList<>();
 	private List<Statement> stmtList;
 	private Type returnType;
     
@@ -60,6 +62,14 @@ public class MethodDec extends Member {
     	return this.formalParamDec;
     }
     
+    public List<String> getParamsTypes() {	
+    	return this.formalParamDec
+    			.stream()
+    			.map(Variable::getType)
+    			.map(type -> type.getName())
+    			.collect(Collectors.toList());
+    }
+    
     public void setStmtList(List<Statement> stmtList) {
     	this.stmtList = stmtList;
     }
@@ -69,6 +79,13 @@ public class MethodDec extends Member {
     		return true;
     	}
     	return this.qualifier.hasPublicQualifier();
+    }
+    
+    public List<Token> getQualifiers() {
+    	if (this.qualifier == null) {
+    		return Collections.singletonList(Token.PUBLIC);
+    	}
+    	return this.qualifier.getQualifiers();
     }
 
 	@Override

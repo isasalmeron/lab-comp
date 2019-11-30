@@ -8,6 +8,7 @@ package comp;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import ast.*;
 import lexer.Lexer;
@@ -197,15 +198,15 @@ public class Compiler {
 		
 		classDec.setMemberList(membersList);
 		
-		if ( lexer.token != Token.END)
-			error("'end' expected");
-		lexer.nextToken();
-		
 		if (classDec.getName().equals("Program")) {
 			if (!hasMethodRun(classDec)) {
 				error("Class 'Program' must have a 'run' method");
 			}
 		}
+		
+		if (lexer.token != Token.END)
+			error("'end' expected");
+		lexer.nextToken();
 		
 		symbolTable.clearClass();
 		
@@ -277,8 +278,11 @@ public class Compiler {
 		List<Variable> formalParamDec = null;
 		Type returnType = null;
 		
-		if (currentClass.findMethodInSuper(methodName) != null
-				&& qualifier != null && !qualifier.getQualifiers().contains(Token.OVERRIDE)) {
+		MethodDec methodInSuper = currentClass.findMethodInSuper(methodName);
+		
+		if (methodInSuper != null
+				&& qualifier != null
+				&& !qualifier.getQualifiers().contains(Token.OVERRIDE)) {
 			error("Overriden method '" + methodName + "' should be preceded by 'override'");
 		}
 		
@@ -307,11 +311,6 @@ public class Compiler {
 			returnType = type();
 		}
 		
-		if (lexer.token != Token.LEFTCURBRACKET) {
-			error("'{' expected");
-		}
-		next();
-		
 		MethodDec method;
 		
 		if (formalParamDec != null) {
@@ -319,6 +318,16 @@ public class Compiler {
 		} else {
 			method = new MethodDec(qualifier, methodName, returnType);
 		}
+		
+		if (methodInSuper != null
+				&& !methodsHaveSameSignature(methodInSuper, method)) {
+			error("Method '" + methodName + "' being overriden in superclass has a different signature");
+		}
+		
+		if (lexer.token != Token.LEFTCURBRACKET) {
+			error("'{' expected");
+		}
+		next();
 		
 		symbolTable.putInClass(methodName, method);
 		this.currentMethod = method;
@@ -335,6 +344,17 @@ public class Compiler {
 		symbolTable.clearLocal();
 		
 		return method;
+	}
+	
+	private Boolean methodsHaveSameSignature(
+			MethodDec methodInSuper,
+			MethodDec method) {
+		List<String> superTypes = methodInSuper.getParamsTypes();
+		List<String> paramsTypes = method.getParamsTypes();
+		
+		return methodInSuper.getParams().size() == method.getParams().size()
+				&& superTypes.equals(paramsTypes)
+				&& methodInSuper.getReturnType() == method.getReturnType();
 	}
 
 	private List<Statement> statementList() {
