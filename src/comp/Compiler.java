@@ -789,6 +789,13 @@ public class Compiler {
 		
 		if (lexer.token == Token.ASSIGN) {
 			operator = lexer.token;
+			
+			if (left instanceof LiteralInt
+					|| left instanceof LiteralBoolean
+					|| left instanceof LiteralString) {
+				error("Variable expected at the left-hand side of a assignment");
+			}
+			
 			next();
 			right = expr();
 			
